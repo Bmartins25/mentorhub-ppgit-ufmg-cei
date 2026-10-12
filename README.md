@@ -57,3 +57,7 @@ O arquivo `.streamlit/config.toml` força o tema claro nativo do Streamlit. A ta
 
 
 Identidade visual: `mentorhub_logo.png` é exibida no topo da barra lateral. Envie também este arquivo ao GitHub.
+
+
+## V10 — Interface mobile
+Oculta os controles de plataforma Fork e menu de três pontos por CSS, preservando o acesso ao menu lateral. Os seletores CSS podem variar conforme a versão do Streamlit.

@@ -32,6 +32,14 @@ h1,h2,h3,h4{color:#123c70!important}p,label,[data-testid="stMarkdownContainer"]{
 .eyebrow{color:#dceeff!important;font-size:.78rem;font-weight:800;letter-spacing:.12em}
 .small{color:#61748e;font-size:.9rem}.section-label{font-size:.82rem;font-weight:750;color:#1463ba;letter-spacing:.07em;text-transform:uppercase}
 
+/* V10: ocultar ações de plataforma (Fork e menu), mantendo o controle da sidebar */
+[data-testid="stToolbar"], [data-testid="stAppToolbar"],
+[data-testid="stMainMenu"], [data-testid="stDecoration"],
+[data-testid="stStatusWidget"], #MainMenu,
+.stAppDeployButton, [data-testid="stAppDeployButton"] {
+ display:none!important; visibility:hidden!important;
+}
+
 /* Dropdown, menu e controles: tema claro consistente */
 [data-baseweb="popover"], [data-baseweb="popover"] > div, [data-baseweb="popover"] ul,
 [data-baseweb="menu"], [role="listbox"], [role="option"],
