@@ -196,6 +196,7 @@ body [data-baseweb="popover"] [role="option"] {
 
 if 'custom_mentors' not in st.session_state: st.session_state.custom_mentors=[]
 if 'custom_mentees' not in st.session_state: st.session_state.custom_mentees=[]
+if 'form_reset_counter' not in st.session_state: st.session_state.form_reset_counter=0
 
 with st.sidebar:
     st.image('mentorhub_logo.png', use_container_width=True)
@@ -339,7 +340,7 @@ with profiles_tab:
     ptab,mtab=st.tabs(['Novo mentorado','Novo mentor'])
     areas=AREAS_PPGIT
     with ptab:
-        with st.form('form_mentorado',clear_on_submit=True):
+        with st.form(f"form_mentorado_{st.session_state.form_reset_counter}",clear_on_submit=True):
             a,b=st.columns(2)
             name=a.text_input('Nome fictício do mentorado')
             area=b.selectbox('Área desejada',areas)
@@ -353,7 +354,7 @@ with profiles_tab:
                     st.session_state.custom_mentees.append({'nome':name.strip(),'area':area,'competencias':[s.strip() for s in skills.split(',') if s.strip()],'objetivo':goal.strip()})
                     st.success('Mentorado adicionado à sessão. Acesse Encontrar mentores para testar.')
     with mtab:
-        with st.form('form_mentor',clear_on_submit=True):
+        with st.form(f"form_mentor_{st.session_state.form_reset_counter}",clear_on_submit=True):
             a,b=st.columns(2)
             name=a.text_input('Nome fictício do mentor')
             area=b.selectbox('Área de atuação',areas)
@@ -369,12 +370,24 @@ with profiles_tab:
                 else:
                     st.session_state.custom_mentors.append({'nome':name.strip(),'area':area,'competencias':[s.strip() for s in skills.split(',') if s.strip()],'bio':bio.strip(),'disponivel':available,'lattes':lattes.strip()})
                     st.success('Mentor adicionado à sessão. Ele participará do próximo ranking.')
-    if st.session_state.custom_mentors or st.session_state.custom_mentees:
-        st.divider()
-        if st.button('Limpar perfis adicionados nesta sessão'):
-            st.session_state.custom_mentors=[];st.session_state.custom_mentees=[]
-            st.session_state.pop('ranking_signature',None)
-            st.rerun()
+    st.divider()
+    st.markdown('#### Gerenciar simulação')
+    st.caption('Os perfis originais permanecem intactos. Somente os perfis adicionados nesta sessão podem ser excluídos.')
+    left,right=st.columns(2)
+    if left.button('🧹 Limpar formulários',use_container_width=True,help='Restaura os campos de entrada sem apagar os perfis cadastrados.'):
+        st.session_state.form_reset_counter+=1
+        st.rerun()
+    total_custom=len(st.session_state.custom_mentors)+len(st.session_state.custom_mentees)
+    st.caption(f'Perfis fictícios adicionados nesta sessão: {total_custom}')
+    confirm=st.checkbox('Confirmo a exclusão dos perfis adicionados nesta sessão',key='confirm_delete_custom')
+    if right.button('🗑️ Excluir perfis da sessão',disabled=not (confirm and total_custom),use_container_width=True):
+        st.session_state.custom_mentors=[]
+        st.session_state.custom_mentees=[]
+        for key in ('ranking','ranking_signature','comparison','test_reports','test_signature'):
+            st.session_state.pop(key,None)
+        st.session_state.form_reset_counter+=1
+        st.session_state.confirm_delete_custom=False
+        st.rerun()
 
 with lab_tab:
     st.subheader('Laboratório de testes do matching')
@@ -388,6 +401,10 @@ with lab_tab:
                 reports.append({'Perfil':p['nome'],'Mentor recomendado':m['nome'],'Pontuação (0–100)':s['total'],'Candidatos':len(rows)})
         st.session_state.test_reports=reports
         st.session_state.test_signature=(mode,available_only,repr(all_mentees),repr(all_mentors))
+    if st.button('🧹 Limpar resultados do laboratório',use_container_width=True):
+        st.session_state.pop('test_reports',None)
+        st.session_state.pop('test_signature',None)
+        st.rerun()
     if st.session_state.get('test_signature')==(mode,available_only,repr(all_mentees),repr(all_mentors)):
         reports=st.session_state.test_reports
         if reports:
@@ -437,6 +454,9 @@ with compare_tab:
             rt,t=t_index[m['nome']]; rs,a=s_index[m['nome']]
             rows.append({'Mentor':m['nome'],'Área do mentor':m['area'],'Posição textual':rt,'Score textual':t['total'],'Posição semântica':rs,'Score semântico':a['total'],'Mudança de posição':rt-rs,'Similaridade lexical (%)':t['semantica'],'Similaridade semântica (%)':a['semantica'],'Competências textual (%)':t['competencias'],'Competências semântica (%)':a['competencias'],'Área (%)':a['area'],'Disponibilidade (%)':a['disponibilidade'],'Justificativa textual':t['justificativa'],'Justificativa semântica':a['justificativa']})
         st.session_state.comparison={'signature':(chosen,available_only,repr(all_mentors),repr(all_mentees)),'rows':rows,'profile':dict(profile)}
+    if st.button('🧹 Limpar comparação',use_container_width=True,help='Remove tabela, gráfico e conclusão; não altera os perfis.'):
+        st.session_state.pop('comparison',None)
+        st.rerun()
     comparison=st.session_state.get('comparison')
     if comparison and comparison['signature']==(chosen,available_only,repr(all_mentors),repr(all_mentees)):
         rows=comparison['rows']

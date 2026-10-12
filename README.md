@@ -61,3 +61,9 @@ Identidade visual: `mentorhub_logo.png` é exibida no topo da barra lateral. Env
 
 ## V10 — Interface mobile
 Oculta os controles de plataforma Fork e menu de três pontos por CSS, preservando o acesso ao menu lateral. Os seletores CSS podem variar conforme a versão do Streamlit.
+
+## Versão 11 — controles de limpeza
+- **Limpar formulários** restaura os campos de entrada, sem apagar perfis.
+- **Excluir perfis da sessão** requer confirmação, preserva os perfis demonstrativos e invalida resultados antigos.
+- **Limpar resultados do laboratório** remove os resultados da bateria de testes.
+- **Limpar comparação** remove tabela, gráfico e conclusão, sem alterar cadastros.
