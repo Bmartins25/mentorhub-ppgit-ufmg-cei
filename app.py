@@ -1,7 +1,7 @@
 import csv
 import io
 import streamlit as st
-from matching import MENTORES, MENTORADOS, AREAS_PPGIT, score
+from mentorhub_engine import MENTORES, MENTORADOS, AREAS_PPGIT, score
 
 st.set_page_config(page_title='MentorHub | PPGIT/UFMG/CEI', page_icon='🎓', layout='wide', initial_sidebar_state='expanded')
 st.markdown('''<style>
