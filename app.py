@@ -138,7 +138,12 @@ with st.sidebar:
             st.caption(f'{n}. {area}')
     st.divider()
     st.markdown('**Configuração do motor**')
-    mode=st.radio('Similaridade',['Textual leve','IA semântica (embeddings)'],help='IA semântica usa embeddings multilíngues; o primeiro carregamento baixa o modelo.')
+    mode=st.radio('Como deseja encontrar seu mentor?', ['Textual leve','IA semântica (embeddings)'], help='Escolha como o sistema compara as descrições dos perfis.')
+    if mode=='Textual leve':
+        st.info('🔎 **Busca por palavras**\n\nCompara termos presentes nos perfis. Exemplo: quem procura Python tende a encontrar mentores que também mencionam Python.')
+    else:
+        st.info('🧠 **Busca inteligente com IA**\n\nCompara o significado dos textos, mesmo com palavras diferentes. Exemplo: “prever riscos clínicos” pode estar relacionado a “análise preditiva”.')
+    st.caption('Os dois modos também consideram competências, área e disponibilidade. O score é experimental.')
     available_only=st.checkbox('Somente mentores disponíveis',value=True)
     st.info('Critérios experimentais: competências 40% · similaridade 35% · área 15% · disponibilidade 10%.')
     st.caption('Dados fictícios e perfis inseridos nesta sessão. Pontuações não validadas cientificamente.')
@@ -325,7 +330,20 @@ with lab_tab:
 with method_tab:
     st.subheader('Como funciona o motor de matching?')
     st.markdown('**Pontuação = 0,40 × competências + 0,35 × similaridade + 0,15 × área + 0,10 × disponibilidade.**')
-    st.write('O modo textual compara termos dos objetivos e competências. O modo semântico utiliza embeddings multilíngues, caso o pacote opcional esteja instalado.')
+    st.markdown('### Entenda as duas formas de busca')
+    col_texto, col_ia = st.columns(2)
+    with col_texto:
+        st.markdown('**🔎 Busca por palavras (textual leve)**')
+        st.write('Compara palavras e expressões nos objetivos, nas competências e na descrição do mentor. É rápida, mas pode não reconhecer sinônimos.')
+        st.caption('Exemplo: “Python” no objetivo e “Python” no perfil do mentor.')
+    with col_ia:
+        st.markdown('**🧠 Busca inteligente com IA (embeddings)**')
+        st.write('Transforma descrições em vetores numéricos e compara sua proximidade semântica. Pode relacionar expressões diferentes com significados semelhantes.')
+        st.caption('Exemplo: “prever riscos clínicos” e “análise preditiva”.')
+    st.markdown('**O que muda no ranking?**')
+    st.write('Somente a parcela de similaridade (35%) muda de método: lexical no modo textual e por embeddings no modo de IA. Competências (40%), área (15%) e disponibilidade (10%) continuam iguais.')
+    st.info('Exemplo ilustrativo: um estudante que deseja prever riscos clínicos pode ser associado a um mentor de aprendizado de máquina pela busca semântica, mesmo que os textos não usem as mesmas palavras. Isso não garante uma posição específica no ranking.')
+    st.write('O modo semântico exige que o modelo multilíngue seja carregado no servidor. Se estiver indisponível, utilize o modo textual.')
     st.write('Os candidatos são ordenados pela pontuação calculada, e os componentes do score são exibidos para transparência.')
     st.warning('Pesos e métricas são experimentais. A pontuação não é uma probabilidade de êxito, nem foi validada com avaliações humanas.')
     st.markdown('**Áreas de concentração contempladas:**')
