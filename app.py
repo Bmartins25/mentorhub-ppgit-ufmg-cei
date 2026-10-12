@@ -188,14 +188,18 @@ find_tab,profiles_tab,lab_tab,method_tab=st.tabs(['🔎 Encontrar mentores','�
 
 with find_tab:
     st.subheader('Encontre seu mentor ideal')
-    # Exibe a área de concentração oficial antes do identificador do perfil.
-    selected=st.selectbox(
-        'Perfil do mentorado',
-        options=list(range(len(all_mentees))),
-        format_func=lambda i: f"{all_mentees[i]['area']} — {all_mentees[i]['nome']}",
-        key='perfil_mentorado_v10'
-    )
-    profile=all_mentees[selected]
+    # Cada área aparece uma única vez. Os perfis são selecionados separadamente.
+    areas_disponiveis=[a for a in AREAS_PPGIT if any(p['area']==a for p in all_mentees)]
+    areas_disponiveis += sorted({p['area'] for p in all_mentees} - set(areas_disponiveis))
+    area_escolhida=st.selectbox('Área de concentração do PPGIT', areas_disponiveis, key='area_mentorado_v11')
+    perfis_da_area=[p for p in all_mentees if p['area']==area_escolhida]
+    if len(perfis_da_area)>1:
+        indice_perfil=st.selectbox('Perfil do mentorado', range(len(perfis_da_area)),
+                                  format_func=lambda i: perfis_da_area[i]['nome'], key='perfil_mentorado_v11')
+        profile=perfis_da_area[indice_perfil]
+    else:
+        profile=perfis_da_area[0]
+        st.caption('Perfil do mentorado: '+profile['nome'])
     with st.container(border=True):
         left,right=st.columns([2,1])
         with left:
