@@ -1,22 +1,20 @@
-# MentorHub — PPGIT/UFMG/CEI — v4
+# MentorHub — PPGIT/UFMG/CEI — v7
 
-MVP demonstrativo em Streamlit, com interface clara, ranking explicável, cadastro de perfis fictícios em sessão e laboratório de testes.
+Protótipo demonstrativo independente de matching acadêmico. Os perfis são fictícios e não há integração com sistemas institucionais.
 
-## Publicar no Streamlit Community Cloud
+## Melhorias
+- Cinco áreas de concentração do PPGIT; oito mentores e seis mentorados fictícios.
+- Campo opcional de Currículo Lattes para novos mentores e link no ranking quando preenchido.
+- Interface clara, inclusive menus suspensos e botão de exportação CSV.
+- Rodapé «Equipe MentorHub».
+- Ranking explicável e laboratório de testes.
 
-1. Envie **os arquivos do conteúdo desta pasta** para a raiz do repositório `mentorhub-ppgit-ufmg-cei` no GitHub (inclua `.streamlit/config.toml`).
-2. O app existente deverá reconstruir automaticamente após o commit. O arquivo principal é `app.py`.
-3. Abra https://mentor-ppgit-ufmg-cei.streamlit.app/ e atualize a página.
+## Publicação no GitHub / Streamlit Cloud
+**Envie `app.py`, `matching.py`, `requirements.txt`, `.streamlit/config.toml` juntos.** Não renomeie `matching.py`: o import do `app.py` depende desse nome. Oculte/exclua `__pycache__` (já ignorado por `.gitignore`).
 
-## Execução local
+O Streamlit deve apontar para `app.py` na branch `main`. Se houver opção de Python no painel de deploy, prefira Python 3.12 ou 3.13.
 
-```bash
-python -m pip install -r requirements.txt
-python -m streamlit run app.py
-```
+### Teste antes de publicar
+Execute `python test_smoke.py` para verificar importações, dados e pontuações sem instalar Streamlit. Para executar o aplicativo localmente: `pip install -r requirements.txt` e `streamlit run app.py`.
 
-## IA semântica (opcional)
-
-Para habilitar o modo semântico, instale `sentence-transformers` no ambiente ou adicione uma versão compatível ao `requirements.txt`. O primeiro uso baixa o modelo, o que pode aumentar tempo e memória de inicialização. O modo textual funciona sem essa dependência.
-
-**Nota:** perfis cadastrados são temporários, mantidos apenas na sessão Streamlit. Não há persistência, autenticação ou vínculo com sistemas institucionais. Não inserir dados pessoais reais.
+O modo de IA semântica é opcional e exige `sentence-transformers` instalado separadamente. O modo textual funciona apenas com Streamlit.
