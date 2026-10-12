@@ -67,3 +67,7 @@ Oculta os controles de plataforma Fork e menu de três pontos por CSS, preservan
 - **Excluir perfis da sessão** requer confirmação, preserva os perfis demonstrativos e invalida resultados antigos.
 - **Limpar resultados do laboratório** remove os resultados da bateria de testes.
 - **Limpar comparação** remove tabela, gráfico e conclusão, sem alterar cadastros.
+
+
+## v12 — Controles responsivos
+A configuração do motor e o filtro de disponibilidade foram movidos da barra lateral para a área principal, acessível em telas móveis e desktop. Os controles são únicos e compartilhados por todas as abas; detalhes ficam em painel expansível.

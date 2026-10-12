@@ -205,16 +205,7 @@ with st.sidebar:
         for n, area in enumerate(AREAS_PPGIT, 1):
             st.caption(f'{n}. {area}')
     st.divider()
-    st.markdown('**Configuração do motor**')
-    mode=st.radio('Como deseja encontrar seu mentor?', ['Textual leve','IA semântica (embeddings)'], help='Escolha como o sistema compara as descrições dos perfis.')
-    if mode=='Textual leve':
-        st.info('🔎 **Busca por palavras**\n\nCompara termos presentes nos perfis. Exemplo: quem procura Python tende a encontrar mentores que também mencionam Python.')
-    else:
-        st.info('🧠 **Busca inteligente com IA**\n\nCompara o significado dos textos, mesmo com palavras diferentes. Exemplo: “prever riscos clínicos” pode estar relacionado a “análise preditiva”.')
-    st.caption('Os dois modos também consideram competências, área e disponibilidade. O score é experimental.')
-    available_only=st.checkbox('Somente mentores disponíveis',value=True)
-    st.info('Pesos — Textual: competências 40%, contexto 35%, área 15%, disponibilidade 10%. IA semântica: competências 30%, contexto 50%, área 10%, disponibilidade 10%.')
-    st.caption('Dados fictícios e perfis inseridos nesta sessão. Pontuações não validadas cientificamente.')
+    st.caption('Configuração do matching disponível na área principal, inclusive no celular.')
     st.divider()
     st.caption('Protótipo acadêmico independente • PPGIT/UFMG/CEI')
 
@@ -226,6 +217,19 @@ c1.metric('Mentores cadastrados',len(all_mentors))
 c2.metric('Mentorados cadastrados',len(all_mentees))
 c3.metric('Mentores disponíveis',sum(m['disponivel'] for m in all_mentors))
 c4.metric('Áreas de concentração',len(AREAS_PPGIT))
+# Controles únicos na área principal: acessíveis em desktop e dispositivos móveis.
+st.markdown('### Configuração do matching')
+control_a, control_b = st.columns([2, 1])
+with control_a:
+    mode = st.radio('Motor de recomendação', ['Textual leve', 'IA semântica (embeddings)'],
+                    horizontal=True, key='matching_mode_main',
+                    help='A seleção vale para busca e laboratório. A aba de comparação executa ambos os motores.')
+with control_b:
+    available_only = st.checkbox('Somente mentores disponíveis', value=True, key='matching_available_main')
+with st.expander('Entenda a diferença entre os motores e seus pesos'):
+    st.markdown('**Textual leve:** compara palavras e expressões presentes nos perfis. Pesos: competências 40%, contexto 35%, área 15% e disponibilidade 10%.')
+    st.markdown('**IA semântica:** utiliza embeddings para comparar significado e contexto. Pesos: competências 30%, contexto 50%, área 10% e disponibilidade 10%.')
+    st.caption('Scores experimentais, não representam probabilidade de sucesso. Os dois motores consideram competências, área e disponibilidade.')
 st.caption('Motor selecionado: ' + ('IA semântica' if mode.startswith('IA') else 'Textual leve'))
 
 @st.cache_resource(show_spinner=False)
