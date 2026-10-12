@@ -112,12 +112,19 @@ body [data-baseweb="menu"] li:hover {background:#e9f3ff!important;}
   color:#1155a0!important;-webkit-text-fill-color:#1155a0!important;
 }
 
-/* V9: perfis em opções claras, eliminando o dropdown escuro. */
-[data-testid="stRadio"] [role="radiogroup"] {display:flex!important;flex-wrap:wrap!important;gap:9px!important;align-items:stretch!important;}
-[data-testid="stRadio"] label[data-baseweb="radio"] {background:#ffffff!important;border:1px solid #c6d9ef!important;border-radius:10px!important;padding:9px 14px!important;margin:0!important;min-height:42px!important;}
-[data-testid="stRadio"] label[data-baseweb="radio"]:hover {background:#eaf3ff!important;border-color:#78b0f0!important;}
-[data-testid="stRadio"] label[data-baseweb="radio"] span,[data-testid="stRadio"] label[data-baseweb="radio"] p {color:#17365d!important;-webkit-text-fill-color:#17365d!important;}
-[data-testid="stRadio"] [role="radiogroup"] label:has(input:checked) {background:#e3f0ff!important;border-color:#1265d6!important;box-shadow:0 0 0 1px #1265d6 inset!important;}
+/* V10: dropdown com paleta clara e área oficial visível. */
+[data-testid="stSelectbox"] [data-baseweb="select"],
+[data-testid="stSelectbox"] [data-baseweb="select"] > div,
+[data-testid="stSelectbox"] [role="combobox"] {
+  background-color:#ffffff!important;color:#17365d!important;border-color:#b8d6fa!important;
+}
+[data-testid="stSelectbox"] [data-baseweb="select"] * {
+  color:#17365d!important;-webkit-text-fill-color:#17365d!important;
+}
+body [data-baseweb="popover"] [role="listbox"],
+body [data-baseweb="popover"] [role="option"] {
+  background-color:#ffffff!important;color:#17365d!important;
+}
 </style>''',unsafe_allow_html=True)
 
 if 'custom_mentors' not in st.session_state: st.session_state.custom_mentors=[]
@@ -181,10 +188,14 @@ find_tab,profiles_tab,lab_tab,method_tab=st.tabs(['🔎 Encontrar mentores','�
 
 with find_tab:
     st.subheader('Encontre seu mentor ideal')
-    names=[m['nome'] for m in all_mentees]
-    # Seleção por cartões nativos, sem dropdown BaseWeb (que assumia fundo escuro no Cloud).
-    selected=st.radio('Perfil do mentorado', names, horizontal=True, key='perfil_mentorado', label_visibility='visible')
-    profile=next(m for m in all_mentees if m['nome']==selected)
+    # Exibe a área de concentração oficial antes do identificador do perfil.
+    selected=st.selectbox(
+        'Perfil do mentorado',
+        options=list(range(len(all_mentees))),
+        format_func=lambda i: f"{all_mentees[i]['area']} — {all_mentees[i]['nome']}",
+        key='perfil_mentorado_v10'
+    )
+    profile=all_mentees[selected]
     with st.container(border=True):
         left,right=st.columns([2,1])
         with left:
