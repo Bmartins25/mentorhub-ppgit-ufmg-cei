@@ -28,3 +28,6 @@ O teste smoke valida a importação e o algoritmo textual, mas não substitui o 
 
 ## Versão 3 — comparação controlada
 A aba **Comparar motores** executa Textual Leve e IA Semântica sobre o mesmo perfil e conjunto de mentores, apresenta diferenças de posição, componentes do score e justificativas, e exporta CSV com os parâmetros do experimento. O score é heurístico e não representa probabilidade de sucesso. A qualidade da recomendação exige avaliação humana de relevância.
+
+## v4 — interface clara e gráfico de barras
+A aba Comparar motores mantém a tabela, substitui o gráfico empilhado por barras agrupadas por mentor, com fundo branco e legenda de motores. O CSV registra a versão `v4-comparativo-barras`.

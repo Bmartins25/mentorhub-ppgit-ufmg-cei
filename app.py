@@ -1,5 +1,7 @@
 import csv
 import io
+import pandas as pd
+import altair as alt
 from urllib.parse import urlparse
 import streamlit as st
 from matching import MENTORES, MENTORADOS, AREAS_PPGIT, score
@@ -372,13 +374,37 @@ with compare_tab:
     if comparison and comparison['signature']==(chosen,available_only,repr(all_mentors),repr(all_mentees)):
         rows=comparison['rows']
         if rows:
-            st.dataframe(rows,hide_index=True,use_container_width=True)
+            st.markdown('#### Ranking comparativo dos mentores')
+            st.dataframe(
+                pd.DataFrame(rows),hide_index=True,use_container_width=True,
+                column_config={
+                    'Score textual':st.column_config.NumberColumn(format='%.1f'),
+                    'Score semântico':st.column_config.NumberColumn(format='%.1f'),
+                    'Similaridade semântica (%)':st.column_config.ProgressColumn(min_value=0,max_value=100,format='%.1f%%'),
+                },
+            )
             st.caption('Mudança de posição positiva: o mentor subiu no ranking semântico. As pontuações usam pesos diferentes; a diferença entre scores não mede ganho de qualidade.')
-            st.bar_chart({r['Mentor']:{'Textual':r['Score textual'],'Semântica':r['Score semântico']} for r in rows},y_label='Score heurístico (0–100)')
+            st.markdown('#### Comparação de scores por mentor')
+            st.caption('Barras agrupadas: cada mentor tem uma barra por algoritmo. Os valores são scores heurísticos, não probabilidades.')
+            chart_df=pd.DataFrame([
+                {'Mentor':r['Mentor'],'Motor':'Textual Leve','Score':r['Score textual']} for r in rows
+            ]+[
+                {'Mentor':r['Mentor'],'Motor':'IA Semântica','Score':r['Score semântico']} for r in rows
+            ])
+            mentor_order=[r['Mentor'] for r in rows]
+            chart=alt.Chart(chart_df,background='#ffffff').mark_bar(cornerRadiusTopLeft=3,cornerRadiusTopRight=3).encode(
+                x=alt.X('Mentor:N',sort=mentor_order,title=None,axis=alt.Axis(labelAngle=-25,labelColor='#203b5e',titleColor='#203b5e')),
+                xOffset=alt.XOffset('Motor:N',sort=['Textual Leve','IA Semântica']),
+                y=alt.Y('Score:Q',scale=alt.Scale(domain=[0,100]),title='Pontuação (0–100)',axis=alt.Axis(labelColor='#203b5e',titleColor='#203b5e',gridColor='#e3ebf5')),
+                color=alt.Color('Motor:N',scale=alt.Scale(domain=['Textual Leve','IA Semântica'],range=['#8ab6e8','#1265d6']),legend=alt.Legend(orient='top',title=None,labelColor='#203b5e')),
+                tooltip=[alt.Tooltip('Mentor:N'),alt.Tooltip('Motor:N'),alt.Tooltip('Score:Q',format='.1f')]
+            ).properties(height=350,padding={'left':10,'top':15,'right':15,'bottom':5}).configure_view(stroke=None).configure(background='#ffffff')
+            st.altair_chart(chart,use_container_width=True,theme=None)
+
             out=io.StringIO(); writer=csv.writer(out)
             writer.writerow(['perfil_mentorado','area_mentorado','objetivo_mentoria','competencias_mentorado','modelo_embeddings','versao_algoritmo']+list(rows[0].keys()))
             for r in rows:
-                writer.writerow([profile['nome'],profile['area'],profile['objetivo'],'; '.join(profile['competencias']),'paraphrase-multilingual-MiniLM-L12-v2','v3-comparativo']+list(r.values()))
+                writer.writerow([profile['nome'],profile['area'],profile['objetivo'],'; '.join(profile['competencias']),'paraphrase-multilingual-MiniLM-L12-v2','v4-comparativo-barras']+list(r.values()))
             st.download_button('⬇️ Exportar comparação (CSV)',out.getvalue().encode('utf-8-sig'),'mentorhub_comparacao_motores.csv','text/csv')
             st.info('Validação de qualidade requer avaliações humanas de relevância. Diferenças de ranking, isoladamente, não comprovam superioridade do motor semântico.')
         else: st.warning('Nenhum mentor atende ao filtro de disponibilidade.')
