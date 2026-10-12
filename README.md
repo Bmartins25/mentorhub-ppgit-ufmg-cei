@@ -45,3 +45,8 @@ A aba Comparar motores mantém a tabela, substitui o gráfico empilhado por barr
 - Mudança de posição: subida em verde (↑ +N), queda em vermelho (↓ −N).
 - Conclusão automática, específica para o perfil selecionado, com líder de cada motor, maior subida e maior queda.
 - Scores são heurísticos e não constituem probabilidades ou validação de qualidade.
+
+## Versão 7
+- Campos de cadastro e gráficos do laboratório em tema claro.
+- Laboratório com gráfico Altair de barras azuis e fundo branco.
+- Metodologia reorganizada em etapas, pesos, interpretação, limites e privacidade.

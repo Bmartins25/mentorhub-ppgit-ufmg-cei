@@ -145,6 +145,23 @@ body [data-baseweb="popover"] [role="option"] {
 .mentor-table .rank-up{color:#167347!important;font-weight:800;white-space:nowrap}
 .mentor-table .rank-down{color:#c33e47!important;font-weight:800;white-space:nowrap}
 @media(max-width:700px){.mentor-table{font-size:.88rem}.mentor-table td,.mentor-table th{padding:9px!important}}
+
+/* V7 — superfícies claras em todos os campos e tabelas de laboratório */
+[data-testid="stTextInput"] input,[data-testid="stTextArea"] textarea,
+[data-testid="stTextInput"] [data-baseweb="input"],
+[data-testid="stTextArea"] [data-baseweb="textarea"],
+[data-testid="stTextInput"] [data-baseweb="input"] > div,
+[data-testid="stTextArea"] [data-baseweb="textarea"] > div,
+[data-testid="stSelectbox"] [data-baseweb="select"] > div,
+[data-testid="stSelectbox"] [data-baseweb="select"] > div > div {
+  background:#ffffff!important;color:#17365d!important;-webkit-text-fill-color:#17365d!important;
+}
+[data-testid="stDataFrame"], [data-testid="stDataFrame"] > div,
+[data-testid="stVegaLiteChart"], [data-testid="stVegaLiteChart"] > div,
+[data-testid="stArrowVegaLiteChart"], [data-testid="stArrowVegaLiteChart"] > div {
+ background:#ffffff!important;color:#17365d!important;border-radius:12px;
+}
+[data-testid="stTextInput"] input::placeholder,[data-testid="stTextArea"] textarea::placeholder{color:#7a8ca4!important;-webkit-text-fill-color:#7a8ca4!important}
 </style>''',unsafe_allow_html=True)
 
 if 'custom_mentors' not in st.session_state: st.session_state.custom_mentors=[]
@@ -345,7 +362,13 @@ with lab_tab:
         reports=st.session_state.test_reports
         if reports:
             st.dataframe(reports,use_container_width=True,hide_index=True)
-            st.bar_chart({r['Perfil']:r['Pontuação (0–100)'] for r in reports},y_label='Pontuação')
+            chart_df=pd.DataFrame(reports)
+            chart=alt.Chart(chart_df).mark_bar(color='#2474d2',cornerRadiusTopLeft=4,cornerRadiusTopRight=4).encode(
+                x=alt.X('Perfil:N',sort=None,title='Perfil de mentorado',axis=alt.Axis(labelAngle=-25,labelLimit=200)),
+                y=alt.Y('Pontuação (0–100):Q',scale=alt.Scale(domain=[0,100]),title='Pontuação (0–100)'),
+                tooltip=['Perfil:N','Mentor recomendado:N',alt.Tooltip('Pontuação (0–100):Q',format='.1f')]
+            ).properties(height=330,background='white').configure_view(stroke=None).configure_axis(labelColor='#24466a',titleColor='#24466a',gridColor='#e4edf7').configure_legend(labelColor='#24466a',titleColor='#24466a')
+            st.altair_chart(chart,use_container_width=True)
             st.caption('Os valores são scores heurísticos. Não representam acurácia nem taxa de sucesso.')
         else:st.warning('Sem candidatos disponíveis para os cenários.')
     else:st.info('Clique em Executar bateria de testes para iniciar.')
@@ -450,28 +473,58 @@ with compare_tab:
         st.info('Selecione o perfil e execute a comparação. A primeira execução pode demorar enquanto o modelo é carregado.')
 
 with method_tab:
-    st.subheader('Como funciona o motor de matching?')
-    st.markdown('**Textual leve:** 40% competências lexicais + 35% similaridade lexical + 15% área + 10% disponibilidade.\n\n**IA semântica:** 30% competências (embeddings e termos) + 50% contexto semântico + 10% área + 10% disponibilidade.')
-    st.markdown('### Entenda as duas formas de busca')
+    st.subheader('Metodologia do MentorHub')
+    st.write('Esta seção explica como os perfis são comparados, o que significa cada pontuação e quais são os limites dos resultados. O protótipo utiliza dados demonstrativos e pesos experimentais.')
+    st.info('**Em resumo:** o Textual Leve procura correspondências de palavras. A IA Semântica compara também a proximidade de significado. Ambos produzem recomendações exploratórias, não decisões automáticas.')
+
+    st.markdown('### 1. Etapas da recomendação')
+    st.markdown('**Perfil do mentorado → perfis de mentores → cálculo dos critérios → ranking → justificativas e comparação.**')
+    st.write('O perfil inclui área de interesse, competências desejadas e objetivo da mentoria. Cada mentor apresenta área de atuação, competências, experiência e disponibilidade. A classificação considera as informações disponíveis no momento do teste.')
+
+    st.markdown('### 2. Diferenças entre os motores')
     col_texto, col_ia = st.columns(2)
     with col_texto:
-        st.markdown('**🔎 Busca por palavras (textual leve)**')
-        st.write('Compara palavras e expressões nos objetivos, nas competências e na descrição do mentor. É rápida, mas pode não reconhecer sinônimos.')
-        st.caption('Exemplo: “Python” no objetivo e “Python” no perfil do mentor.')
+        with st.container(border=True):
+            st.markdown('#### 🔎 Textual Leve')
+            st.write('Compara palavras e expressões dos perfis. Identifica correspondências literais, mas pode deixar de reconhecer termos equivalentes.')
+            st.caption('Exemplo: “Python” no objetivo e “Python” nas competências do mentor.')
     with col_ia:
-        st.markdown('**🧠 Busca inteligente com IA (embeddings)**')
-        st.write('Transforma descrições em vetores numéricos e compara sua proximidade semântica. Pode relacionar expressões diferentes com significados semelhantes.')
-        st.caption('Exemplo: “prever riscos clínicos” e “análise preditiva”.')
-    st.markdown('**O que muda no ranking?**')
-    st.write('O modo textual utiliza sobreposição de termos e similaridade lexical. A IA semântica utiliza três comparações vetoriais independentes (objetivo × biografia, competências × competências e perfis completos), com pesos próprios. Scores de motores diferentes não são probabilidades nem diretamente calibrados.')
-    st.info('Exemplo ilustrativo: um estudante que deseja prever riscos clínicos pode ser associado a um mentor de aprendizado de máquina pela busca semântica, mesmo que os textos não usem as mesmas palavras. Isso não garante uma posição específica no ranking.')
-    st.write('O modo semântico exige que o modelo multilíngue seja carregado no servidor. Se estiver indisponível, utilize o modo textual.')
-    st.write('Os candidatos são ordenados pela pontuação calculada, e os componentes do score são exibidos para transparência.')
-    st.warning('Pesos e métricas são experimentais. A pontuação não é uma probabilidade de êxito, nem foi validada com avaliações humanas.')
-    st.markdown('**Áreas de concentração contempladas:**')
-    for i, area in enumerate(AREAS_PPGIT, 1):
-        st.write(f'{i}. {area}')
-    st.markdown('**Próximas etapas:** avaliação com usuários, métricas de ranking, auditoria de vieses, critérios de elegibilidade e conformidade com a LGPD.')
+        with st.container(border=True):
+            st.markdown('#### 🧠 IA Semântica')
+            st.write('Utiliza embeddings multilíngues para representar textos numericamente e estimar proximidade de significado, inclusive entre expressões diferentes.')
+            st.caption('Exemplo: “prever riscos clínicos” e “modelagem preditiva em saúde”.')
+
+    st.markdown('### 3. Como a pontuação é calculada')
+    pesos=pd.DataFrame([
+        {'Critério':'Competências','Textual Leve':40,'IA Semântica':30},
+        {'Critério':'Similaridade textual / contexto semântico','Textual Leve':35,'IA Semântica':50},
+        {'Critério':'Área de concentração','Textual Leve':15,'IA Semântica':10},
+        {'Critério':'Disponibilidade','Textual Leve':10,'IA Semântica':10},
+    ])
+    st.dataframe(pesos,hide_index=True,use_container_width=True,column_config={
+        'Textual Leve':st.column_config.NumberColumn('Textual Leve (%)',format='%d%%'),
+        'IA Semântica':st.column_config.NumberColumn('IA Semântica (%)',format='%d%%')})
+    st.caption('Pesos heurísticos do protótipo, não calibrados empiricamente. A IA semântica combina comparações entre objetivo e biografia, competências e perfis completos.')
+
+    st.markdown('### 4. Como interpretar os resultados')
+    with st.expander('Pontuação, similaridade e mudança de posição',expanded=True):
+        st.write('**Pontuação (0–100):** índice heurístico de ordenação dentro de cada motor. Não é probabilidade de sucesso.')
+        st.write('**Similaridade:** medida calculada pelo algoritmo; não equivale automaticamente à qualidade de uma mentoria.')
+        st.write('**Mudança de posição:** indica subida ou queda no ranking semântico em relação ao textual. A diferença entre os scores não mede ganho de qualidade.')
+        st.write('**Disponibilidade:** critério operacional que não substitui a avaliação da aderência acadêmica.')
+    with st.expander('Por que os motores podem recomendar mentores diferentes?'):
+        st.write('Uma expressão pode ter pouca coincidência literal com outra, mas proximidade de significado. Por isso, os rankings podem mudar. A relevância da recomendação ainda deve ser julgada por pessoas que conheçam a área de pesquisa.')
+
+    st.markdown('### 5. Limitações e validação científica')
+    st.warning('O MentorHub é um protótipo acadêmico. Os scores não são probabilidades, e não há evidência suficiente para afirmar superioridade de um motor sem avaliação humana independente.')
+    st.write('A validação futura deve incluir julgamentos de relevância por especialistas, cenários reproduzíveis, métricas como Precision@K e NDCG@K, análise de vieses e verificação dos critérios de elegibilidade.')
+    st.write('O motor semântico depende do carregamento do modelo multilíngue no servidor. Caso ele não esteja disponível, o modo textual pode ser usado separadamente.')
+
+    with st.expander('Áreas de concentração contempladas'):
+        for i, area in enumerate(AREAS_PPGIT, 1):
+            st.write(f'{i}. {area}')
+    with st.expander('Privacidade e escopo do protótipo'):
+        st.write('Os perfis criados nesta demonstração ficam na memória da sessão, sem persistência em banco de dados. Utilize dados fictícios. A plataforma não está integrada a sistemas institucionais e exige avaliação de conformidade com a LGPD antes de uso com dados pessoais reais.')
 
 st.divider()
 st.markdown('<div class="team-footer"><strong>Equipe MentorHub</strong> · PPGIT/UFMG/CEI<br>Protótipo acadêmico demonstrativo independente · Dados fictícios · Sem integração com sistemas institucionais.</div>',unsafe_allow_html=True)
