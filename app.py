@@ -22,7 +22,7 @@ st.markdown('''<style>
 .stApp,[data-testid="stAppViewContainer"],[data-testid="stMain"]{background:#f6f9fd;color:#20314a}
 [data-testid="stSidebar"],[data-testid="stSidebar"]>div{background:#ffffff!important}
 .block-container{max-width:1320px;padding-top:1.3rem;padding-bottom:3rem}
-h1,h2,h3,h4{color:#123c70!important}p,label,[data-testid="stMarkdownContainer"]{color:#253b58}
+h1,h2,h3,h4{color:#123c70!important}p,[data-testid="stMarkdownContainer"]{color:#253b58}
 [data-testid="stButton"] button[kind="primary"]{background:#1265d6!important;color:white!important;border:0;border-radius:10px;font-weight:700}
 [data-testid="stButton"] button[kind="primary"] p{color:white!important}
 [data-testid="stMetric"]{background:#fff;padding:16px;border-radius:14px;border:1px solid #dae5f2;box-shadow:0 2px 10px #1c4b780a}
@@ -212,8 +212,7 @@ body [data-baseweb="popover"] [role="option"] {
 .stApp [data-testid="stRadio"] [role="radiogroup"] label,
 .stApp [data-testid="stRadio"] [role="radiogroup"] label > div,
 .stApp [data-testid="stRadio"] [role="radiogroup"] label [data-baseweb="radio"],
-.stApp [data-testid="stCheckbox"] label,
-.stApp [data-testid="stCheckbox"] label > div {background:transparent!important;color:#17365d!important;}
+.stApp [data-testid="stRadio"] [role="radiogroup"] label > div {background:transparent!important;color:#17365d!important;}
 .stApp [data-testid="stRadio"] [role="radio"] {
  background:#fff!important;border:2px solid #7ca9dc!important;
  box-shadow:none!important;accent-color:#1265d6!important;
@@ -232,15 +231,14 @@ body [data-baseweb="popover"] [role="option"] {
 }
 .stApp [data-testid="stSelectbox"] [data-baseweb="select"] svg,
 .stApp [data-testid="stSelectbox"] [data-baseweb="select"] svg path {fill:#1265d6!important;color:#1265d6!important;}
-.stApp [data-testid="stCheckbox"] input {accent-color:#1265d6!important;}
-/* V16: sidebar removida e checkbox original sempre visível */
+/* V17: não sobrescrever a estrutura interna do checkbox do Streamlit.
+   As regras antigas pintavam o marcador de branco ao selecionar. */
 [data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"],
 [data-testid="collapsedControl"], [data-testid="stSidebarNav"] {display:none!important;}
 [data-testid="stAppViewContainer"] [data-testid="stMain"] {width:100%!important;max-width:100%!important;margin-left:0!important;}
-.stApp [data-testid="stCheckbox"] label {display:flex!important;align-items:center!important;gap:8px!important;opacity:1!important;cursor:pointer!important;}
-.stApp [data-testid="stCheckbox"] [data-baseweb="checkbox"] {display:flex!important;visibility:visible!important;opacity:1!important;flex-shrink:0!important;}
-.stApp [data-testid="stCheckbox"] [data-baseweb="checkbox"] > div {visibility:visible!important;opacity:1!important;border:2px solid #1265d6!important;background:#fff!important;border-radius:4px!important;}
-.stApp [data-testid="stCheckbox"] input:checked + div {background:#1265d6!important;}
+.stApp [data-testid="stCheckbox"] {color-scheme:light!important;}
+.stApp [data-testid="stCheckbox"] label {cursor:pointer!important;}
+.stApp [data-testid="stCheckbox"] input[type="checkbox"] {accent-color:#1265d6!important;}
 .stApp [data-testid="stTabs"] [data-baseweb="tab-list"] {overflow-x:auto!important;scrollbar-width:thin;flex-wrap:nowrap!important;}
 .stApp [data-testid="stTabs"] [data-baseweb="tab"] {flex-shrink:0!important;white-space:nowrap!important;}
 @media(max-width:720px){

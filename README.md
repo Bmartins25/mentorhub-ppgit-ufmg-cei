@@ -75,3 +75,7 @@ A configuração do motor e o filtro de disponibilidade foram movidos da barra l
 
 ## Versão 13 — Controles claros
 CSS específico para rádio, checkbox e seletor, inclusive a área da seta. Sem alterações nos motores ou dados. Validar no Streamlit Cloud e no celular.
+
+
+## v17
+Corrige checkbox que desaparecia ao ser selecionado: removidas sobrescritas CSS do indicador nativo; sidebar permanece oculta.
