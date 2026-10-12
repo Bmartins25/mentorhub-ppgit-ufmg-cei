@@ -192,6 +192,32 @@ body [data-baseweb="popover"] [role="option"] {
 .method-weights tr:nth-child(even) td{background:#f5f9ff!important}
 .method-weights td:not(:first-child){text-align:center;font-weight:700}
 .method-note{padding:14px 18px;background:#eef5ff;color:#17365d;border-left:4px solid #1265d6;border-radius:9px;margin:12px 0 20px}
+
+/* V13 — controles sem superfícies pretas, incluindo ícones e rádio não selecionado */
+.stApp [data-testid="stRadio"] [role="radiogroup"] label,
+.stApp [data-testid="stRadio"] [role="radiogroup"] label > div,
+.stApp [data-testid="stRadio"] [role="radiogroup"] label [data-baseweb="radio"],
+.stApp [data-testid="stCheckbox"] label,
+.stApp [data-testid="stCheckbox"] label > div {background:transparent!important;color:#17365d!important;}
+.stApp [data-testid="stRadio"] [role="radio"] {
+ background:#fff!important;border:2px solid #7ca9dc!important;
+ box-shadow:none!important;accent-color:#1265d6!important;
+}
+.stApp [data-testid="stRadio"] [role="radio"][aria-checked="true"] {
+ border-color:#1265d6!important;background:#1265d6!important;
+}
+.stApp [data-testid="stRadio"] [role="radio"] > div {background:#fff!important;}
+.stApp [data-testid="stRadio"] input[type="radio"] {accent-color:#1265d6!important;}
+.stApp [data-testid="stSelectbox"] [data-baseweb="select"] [aria-haspopup="listbox"],
+.stApp [data-testid="stSelectbox"] [data-baseweb="select"] [role="combobox"],
+.stApp [data-testid="stSelectbox"] [data-baseweb="select"] [role="combobox"] > div,
+.stApp [data-testid="stSelectbox"] [data-baseweb="select"] [role="combobox"] > div:last-child,
+.stApp [data-testid="stSelectbox"] [data-baseweb="select"] [data-testid="stSelectboxVirtualDropdown"] {
+ background:#fff!important;background-color:#fff!important;color:#17365d!important;
+}
+.stApp [data-testid="stSelectbox"] [data-baseweb="select"] svg,
+.stApp [data-testid="stSelectbox"] [data-baseweb="select"] svg path {fill:#1265d6!important;color:#1265d6!important;}
+.stApp [data-testid="stCheckbox"] input {accent-color:#1265d6!important;}
 </style>''',unsafe_allow_html=True)
 
 if 'custom_mentors' not in st.session_state: st.session_state.custom_mentors=[]

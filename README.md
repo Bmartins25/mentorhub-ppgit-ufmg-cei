@@ -71,3 +71,7 @@ Oculta os controles de plataforma Fork e menu de três pontos por CSS, preservan
 
 ## v12 — Controles responsivos
 A configuração do motor e o filtro de disponibilidade foram movidos da barra lateral para a área principal, acessível em telas móveis e desktop. Os controles são únicos e compartilhados por todas as abas; detalhes ficam em painel expansível.
+
+
+## Versão 13 — Controles claros
+CSS específico para rádio, checkbox e seletor, inclusive a área da seta. Sem alterações nos motores ou dados. Validar no Streamlit Cloud e no celular.
