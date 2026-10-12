@@ -29,14 +29,14 @@ AREAS_PPGIT = [
     'Sustentabilidade',
 ]
 MENTORES = [
- {'nome':'Ana Costa','area':AREAS_PPGIT[3],'competencias':['Python','Machine Learning','SQL','Power BI'],'bio':'Cientista de dados, orienta projetos de machine learning, análise de dados e carreira em inteligência artificial.','disponivel':True,'lattes':''},
- {'nome':'Carlos Lima','area':AREAS_PPGIT[3],'competencias':['Python','APIs','Docker','Git'],'bio':'Engenheiro de software com experiência em backend, arquitetura de APIs e implantação de aplicações.','disponivel':True,'lattes':''},
- {'nome':'Mariana Rocha','area':AREAS_PPGIT[3],'competencias':['Python','NLP','Machine Learning','Ética em IA'],'bio':'Pesquisadora em processamento de linguagem natural, inteligência artificial responsável e modelos de linguagem.','disponivel':True,'lattes':''},
- {'nome':'João Pereira','area':AREAS_PPGIT[1],'competencias':['Scrum','Produto','Liderança','Gestão de projetos','Empreendedorismo'],'bio':'Mentor de inovação, empreendedorismo, gestão de produtos digitais e liderança de equipes.','disponivel':True,'lattes':''},
- {'nome':'Fernanda Alves','area':AREAS_PPGIT[3],'competencias':['SQL','Power BI','Engenharia de Dados'],'bio':'Especialista em inteligência de negócios, visualização e pipelines de dados.','disponivel':False,'lattes':''},
- {'nome':'Beatriz Nogueira','area':AREAS_PPGIT[0],'competencias':['Biotecnologia','Biofármacos','Pesquisa clínica','Desenvolvimento farmacêutico'],'bio':'Pesquisadora de biotecnologia e inovação biofarmacêutica, com experiência em desenvolvimento de biofármacos.','disponivel':True,'lattes':''},
- {'nome':'Ricardo Mendes','area':AREAS_PPGIT[2],'competencias':['Nanotecnologia','Novos materiais','Química','Caracterização de materiais'],'bio':'Pesquisador de novos materiais e nanotecnologia, com foco em caracterização química e aplicações tecnológicas.','disponivel':True,'lattes':''},
- {'nome':'Luísa Carvalho','area':AREAS_PPGIT[4],'competencias':['Sustentabilidade','Economia circular','ESG','Gestão ambiental'],'bio':'Pesquisadora de sustentabilidade, economia circular e inovação para gestão ambiental.','disponivel':True,'lattes':''},
+ {'nome':'Ana Costa','area':AREAS_PPGIT[3],'competencias':['Python','Machine Learning','SQL','Power BI'],'bio':'Cientista de dados, orienta projetos de machine learning, análise de dados e carreira em inteligência artificial.','disponivel':True},
+ {'nome':'Carlos Lima','area':AREAS_PPGIT[3],'competencias':['Python','APIs','Docker','Git'],'bio':'Engenheiro de software com experiência em backend, arquitetura de APIs e implantação de aplicações.','disponivel':True},
+ {'nome':'Mariana Rocha','area':AREAS_PPGIT[3],'competencias':['Python','NLP','Machine Learning','Ética em IA'],'bio':'Pesquisadora em processamento de linguagem natural, inteligência artificial responsável e modelos de linguagem.','disponivel':True},
+ {'nome':'João Pereira','area':AREAS_PPGIT[1],'competencias':['Scrum','Produto','Liderança','Gestão de projetos','Empreendedorismo'],'bio':'Mentor de inovação, empreendedorismo, gestão de produtos digitais e liderança de equipes.','disponivel':True},
+ {'nome':'Fernanda Alves','area':AREAS_PPGIT[3],'competencias':['SQL','Power BI','Engenharia de Dados'],'bio':'Especialista em inteligência de negócios, visualização e pipelines de dados.','disponivel':False},
+ {'nome':'Beatriz Nogueira','area':AREAS_PPGIT[0],'competencias':['Biotecnologia','Biofármacos','Pesquisa clínica','Desenvolvimento farmacêutico'],'bio':'Pesquisadora de biotecnologia e inovação biofarmacêutica, com experiência em desenvolvimento de biofármacos.','disponivel':True},
+ {'nome':'Ricardo Mendes','area':AREAS_PPGIT[2],'competencias':['Nanotecnologia','Novos materiais','Química','Caracterização de materiais'],'bio':'Pesquisador de novos materiais e nanotecnologia, com foco em caracterização química e aplicações tecnológicas.','disponivel':True},
+ {'nome':'Luísa Carvalho','area':AREAS_PPGIT[4],'competencias':['Sustentabilidade','Economia circular','ESG','Gestão ambiental'],'bio':'Pesquisadora de sustentabilidade, economia circular e inovação para gestão ambiental.','disponivel':True},
 ]
 MENTORADOS = [
  {'nome':'Estudante de IA','area':AREAS_PPGIT[3],'competencias':['Python','Machine Learning','NLP'],'objetivo':'Quero aprender inteligência artificial, processamento de linguagem natural e desenvolver um projeto de machine learning.'},

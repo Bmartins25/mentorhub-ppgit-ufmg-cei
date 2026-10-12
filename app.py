@@ -1,15 +1,7 @@
 import csv
 import io
-from urllib.parse import urlparse
 import streamlit as st
 from matching import MENTORES, MENTORADOS, AREAS_PPGIT, score
-
-def valid_lattes(url):
-    """Accept only HTTPS links to the official Lattes platform."""
-    if not url.strip():
-        return True
-    parsed = urlparse(url.strip())
-    return parsed.scheme == 'https' and parsed.hostname in {'lattes.cnpq.br', 'buscatextual.cnpq.br'} and bool(parsed.path.strip('/'))
 
 st.set_page_config(page_title='MentorHub | PPGIT/UFMG/CEI', page_icon='🎓', layout='wide', initial_sidebar_state='expanded')
 st.markdown('''<style>
@@ -27,28 +19,6 @@ h1,h2,h3,h4{color:#123c70!important}p,label,[data-testid="stMarkdownContainer"]{
 .hero h1{color:white!important;margin:3px 0;font-size:2.05rem}.hero p{color:#edf5ff!important;margin:6px 0 0}
 .eyebrow{color:#dceeff!important;font-size:.78rem;font-weight:800;letter-spacing:.12em}
 .small{color:#61748e;font-size:.9rem}.section-label{font-size:.82rem;font-weight:750;color:#1463ba;letter-spacing:.07em;text-transform:uppercase}
-
-/* Dropdown, menu e controles: eliminar fundos escuros herdados do navegador/tema */
-[data-baseweb="popover"], [data-baseweb="popover"] > div,
-[data-baseweb="menu"], [role="listbox"], [role="option"],
-[data-baseweb="select"] [role="listbox"] {background-color:#ffffff!important;color:#17365d!important;}
-[data-baseweb="popover"] li, [data-baseweb="menu"] li,
-[data-baseweb="menu"] [role="option"], [role="option"] span,
-[data-baseweb="popover"] span {color:#17365d!important;}
-[data-baseweb="menu"] [aria-selected="true"], [role="option"][aria-selected="true"] {background:#e8f2ff!important;}
-[data-baseweb="menu"] [role="option"]:hover, [role="option"]:hover {background:#eef5ff!important;}
-[data-baseweb="select"] input, [data-baseweb="select"] span {color:#17365d!important;}
-/* Botões secundários e download */
-[data-testid="stDownloadButton"] button, [data-testid="stButton"] button[kind="secondary"] {
- background:#eaf3ff!important;border:1px solid #b8d6fa!important;color:#1155a0!important;
- border-radius:10px!important;font-weight:650!important;
-}
-[data-testid="stDownloadButton"] button p, [data-testid="stButton"] button[kind="secondary"] p {color:#1155a0!important;}
-[data-testid="stDownloadButton"] button:hover, [data-testid="stButton"] button[kind="secondary"]:hover {background:#d7eaff!important;}
-[data-testid="stExpander"] {background:#fff!important;border-radius:10px;}
-[data-testid="stExpander"] summary, [data-testid="stExpander"] p {color:#17365d!important;}
-.team-footer {padding:15px 10px 8px;text-align:center;color:#58708d;font-size:.9rem;}
-.team-footer strong{color:#155aaf;}
 </style>''',unsafe_allow_html=True)
 
 if 'custom_mentors' not in st.session_state: st.session_state.custom_mentors=[]
@@ -104,8 +74,8 @@ def rank(profile,semantic=None):
 
 def csv_bytes(rows):
     out=io.StringIO(); w=csv.writer(out)
-    w.writerow(['mentor','area','lattes','pontuacao','competencias','similaridade','area_score','disponibilidade','justificativa'])
-    for m,s in rows:w.writerow([m['nome'],m['area'],m.get('lattes',''),s['total'],s['competencias'],s['semantica'],s['area'],s['disponibilidade'],s['justificativa']])
+    w.writerow(['mentor','area','pontuacao','competencias','similaridade','area_score','disponibilidade','justificativa'])
+    for m,s in rows:w.writerow([m['nome'],m['area'],s['total'],s['competencias'],s['semantica'],s['area'],s['disponibilidade'],s['justificativa']])
     return out.getvalue().encode('utf-8-sig')
 
 find_tab,profiles_tab,lab_tab,method_tab=st.tabs(['🔎 Encontrar mentores','👥 Cadastrar perfis','🧪 Laboratório de testes','📘 Metodologia'])
@@ -141,11 +111,6 @@ with find_tab:
                         st.caption('{} · {}'.format(mentor['area'],'Disponível' if mentor['disponivel'] else 'Indisponível'))
                         st.write(mentor['bio'])
                         st.caption('Competências: '+', '.join(mentor['competencias']))
-                        lattes_url = mentor.get('lattes', '').strip()
-                        if lattes_url:
-                            st.link_button('📚 Currículo Lattes', lattes_url, help='Abrir currículo Lattes em nova aba')
-                        else:
-                            st.caption('Currículo Lattes: não informado (perfil fictício)')
                     with right:st.metric('Compatibilidade','{:.1f}/100'.format(result['total']))
                     st.progress(max(0.,min(1.,result['total']/100)))
                     with st.expander('Entenda esta recomendação'):
@@ -185,15 +150,13 @@ with profiles_tab:
             area=b.selectbox('Área de atuação',areas)
             skills=st.text_input('Competências oferecidas (separadas por vírgula)','Python, SQL')
             bio=st.text_area('Experiência e descrição profissional')
-            lattes=st.text_input('Currículo Lattes (URL HTTPS, opcional)',placeholder='https://lattes.cnpq.br/0000000000000000',help='Use apenas links oficiais do CNPq. Para perfis fictícios, deixe vazio.')
             available=st.checkbox('Disponível para mentoria',value=True)
             submit=st.form_submit_button('Adicionar mentor',type='primary')
             if submit:
                 if not name.strip() or not bio.strip() or not skills.strip():st.error('Preencha nome, competências e experiência.')
-                elif not valid_lattes(lattes):st.error('Informe um endereço HTTPS válido do Currículo Lattes (lattes.cnpq.br) ou deixe o campo vazio.')
                 elif any(p['nome'].casefold()==name.strip().casefold() for p in all_mentors):st.warning('Já existe um mentor com esse nome.')
                 else:
-                    st.session_state.custom_mentors.append({'nome':name.strip(),'area':area,'competencias':[s.strip() for s in skills.split(',') if s.strip()],'bio':bio.strip(),'disponivel':available,'lattes':lattes.strip()})
+                    st.session_state.custom_mentors.append({'nome':name.strip(),'area':area,'competencias':[s.strip() for s in skills.split(',') if s.strip()],'bio':bio.strip(),'disponivel':available})
                     st.success('Mentor adicionado à sessão. Ele participará do próximo ranking.')
     if st.session_state.custom_mentors or st.session_state.custom_mentees:
         st.divider()
@@ -235,4 +198,4 @@ with method_tab:
     st.markdown('**Próximas etapas:** avaliação com usuários, métricas de ranking, auditoria de vieses, critérios de elegibilidade e conformidade com a LGPD.')
 
 st.divider()
-st.markdown('<div class="team-footer"><strong>Equipe MentorHub</strong> · PPGIT/UFMG/CEI<br>Protótipo acadêmico demonstrativo independente · Dados fictícios · Sem integração com sistemas institucionais.</div>',unsafe_allow_html=True)
+st.caption('MentorHub · PPGIT/UFMG/CEI · Protótipo demonstrativo independente. Dados fictícios; sem integração com sistemas institucionais.')

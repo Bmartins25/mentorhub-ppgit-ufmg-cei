@@ -24,14 +24,3 @@ Para habilitar o modo semântico, instale `sentence-transformers` no ambiente ou
 
 ## v5 — Áreas do PPGIT
 Incluídas as cinco áreas de concentração indicadas para o PPGIT/UFMG/CEI. Perfis fictícios cobrem as cinco áreas. Nos formulários, a área é selecionada por lista. Substitua os arquivos da versão anterior no GitHub e mantenha `app.py` como entrada.
-
-
-## Novidades v6
-- Menus suspensos com fundo claro e texto azul-escuro, inclusive no popover do Streamlit.
-- Botão de exportação CSV com fundo azul-claro e contraste aprimorado.
-- Campo opcional Currículo Lattes no cadastro de mentores, validado para URLs HTTPS do CNPq.
-- Link do Lattes nos cartões de mentores, quando preenchido, e coluna Lattes no CSV.
-- Rodapé com crédito **Equipe MentorHub**.
-- Os perfis fictícios não recebem links Lattes inventados.
-
-Para publicar: substitua app.py e matching.py no repositório GitHub; mantenha .streamlit/config.toml e requirements.txt.
