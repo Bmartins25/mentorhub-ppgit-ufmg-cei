@@ -50,3 +50,10 @@ A aba Comparar motores mantém a tabela, substitui o gráfico empilhado por barr
 - Campos de cadastro e gráficos do laboratório em tema claro.
 - Laboratório com gráfico Altair de barras azuis e fundo branco.
 - Metodologia reorganizada em etapas, pesos, interpretação, limites e privacidade.
+
+
+## Versão 8 — tema claro
+O arquivo `.streamlit/config.toml` força o tema claro nativo do Streamlit. A tabela de pesos da metodologia é HTML (sem canvas escuro), e os expansores recebem estilos claros. Envie também a pasta `.streamlit` ao GitHub.
+
+
+Identidade visual: `mentorhub_logo.png` é exibida no topo da barra lateral. Envie também este arquivo ao GitHub.

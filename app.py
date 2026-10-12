@@ -15,6 +15,7 @@ def valid_lattes(url):
     return parsed.scheme == 'https' and parsed.hostname in {'lattes.cnpq.br', 'buscatextual.cnpq.br'} and bool(parsed.path.strip('/'))
 
 st.set_page_config(page_title='MentorHub | PPGIT/UFMG/CEI', page_icon='🎓', layout='wide', initial_sidebar_state='expanded')
+# Streamlit theme is also enforced through .streamlit/config.toml
 st.markdown('''<style>
 .stApp,[data-testid="stAppViewContainer"],[data-testid="stMain"]{background:#f6f9fd;color:#20314a}
 [data-testid="stSidebar"],[data-testid="stSidebar"]>div{background:#ffffff!important}
@@ -162,13 +163,34 @@ body [data-baseweb="popover"] [role="option"] {
  background:#ffffff!important;color:#17365d!important;border-radius:12px;
 }
 [data-testid="stTextInput"] input::placeholder,[data-testid="stTextArea"] textarea::placeholder{color:#7a8ca4!important;-webkit-text-fill-color:#7a8ca4!important}
+
+/* V8: neutraliza cabeçalhos escuros de expansores, inclusive details/summary internos */
+.stApp [data-testid="stExpander"],
+.stApp [data-testid="stExpander"] details,
+.stApp [data-testid="stExpander"] details > summary,
+.stApp [data-testid="stExpander"] [data-testid="stExpanderDetails"],
+.stApp [data-testid="stExpander"] [data-testid="stExpanderDetails"] > div {
+ background:#ffffff!important;background-color:#ffffff!important;color:#17365d!important;
+}
+.stApp [data-testid="stExpander"] details > summary:hover {background:#eaf3ff!important;}
+.stApp [data-testid="stExpander"] summary *,
+.stApp [data-testid="stExpander"] summary svg,
+.stApp [data-testid="stExpander"] summary p {color:#17365d!important;fill:#17365d!important;-webkit-text-fill-color:#17365d!important;}
+/* Fallback para tabelas Streamlit, além das tabelas HTML próprias */
+.stApp [data-testid="stDataFrame"],.stApp [data-testid="stDataFrame"] * {color-scheme:light!important;}
+.method-weights{width:100%;border-collapse:collapse;background:#fff;color:#17365d;border:1px solid #d7e4f3;border-radius:12px;overflow:hidden;font-size:1rem}
+.method-weights th{background:#e8f2ff!important;color:#123c70!important;padding:15px;text-align:left;border-bottom:2px solid #c2d8f1}
+.method-weights td{background:#fff!important;color:#17365d!important;padding:14px 15px;border-bottom:1px solid #e3edf8}
+.method-weights tr:nth-child(even) td{background:#f5f9ff!important}
+.method-weights td:not(:first-child){text-align:center;font-weight:700}
+.method-note{padding:14px 18px;background:#eef5ff;color:#17365d;border-left:4px solid #1265d6;border-radius:9px;margin:12px 0 20px}
 </style>''',unsafe_allow_html=True)
 
 if 'custom_mentors' not in st.session_state: st.session_state.custom_mentors=[]
 if 'custom_mentees' not in st.session_state: st.session_state.custom_mentees=[]
 
 with st.sidebar:
-    st.markdown('## 🎓 MentorHub')
+    st.image('mentorhub_logo.png', use_container_width=True)
     st.caption('PPGIT / UFMG / CEI')
     with st.expander('Áreas de concentração do PPGIT'):
         for n, area in enumerate(AREAS_PPGIT, 1):
@@ -495,19 +517,17 @@ with method_tab:
             st.caption('Exemplo: “prever riscos clínicos” e “modelagem preditiva em saúde”.')
 
     st.markdown('### 3. Como a pontuação é calculada')
-    pesos=pd.DataFrame([
-        {'Critério':'Competências','Textual Leve':40,'IA Semântica':30},
-        {'Critério':'Similaridade textual / contexto semântico','Textual Leve':35,'IA Semântica':50},
-        {'Critério':'Área de concentração','Textual Leve':15,'IA Semântica':10},
-        {'Critério':'Disponibilidade','Textual Leve':10,'IA Semântica':10},
-    ])
-    st.dataframe(pesos,hide_index=True,use_container_width=True,column_config={
-        'Textual Leve':st.column_config.NumberColumn('Textual Leve (%)',format='%d%%'),
-        'IA Semântica':st.column_config.NumberColumn('IA Semântica (%)',format='%d%%')})
+    # Tabela HTML estática: evita a renderização escura do canvas do st.dataframe.
+    st.markdown("""<table class="method-weights"><thead><tr><th>Critério</th><th>Textual Leve</th><th>IA Semântica</th></tr></thead><tbody>
+    <tr><td>Competências</td><td>40%</td><td>30%</td></tr>
+    <tr><td>Similaridade textual / contexto semântico</td><td>35%</td><td>50%</td></tr>
+    <tr><td>Área de concentração</td><td>15%</td><td>10%</td></tr>
+    <tr><td>Disponibilidade</td><td>10%</td><td>10%</td></tr>
+    </tbody></table>""",unsafe_allow_html=True)
     st.caption('Pesos heurísticos do protótipo, não calibrados empiricamente. A IA semântica combina comparações entre objetivo e biografia, competências e perfis completos.')
 
     st.markdown('### 4. Como interpretar os resultados')
-    with st.expander('Pontuação, similaridade e mudança de posição',expanded=True):
+    with st.expander('Pontuação, similaridade e mudança de posição',expanded=False):
         st.write('**Pontuação (0–100):** índice heurístico de ordenação dentro de cada motor. Não é probabilidade de sucesso.')
         st.write('**Similaridade:** medida calculada pelo algoritmo; não equivale automaticamente à qualidade de uma mentoria.')
         st.write('**Mudança de posição:** indica subida ou queda no ranking semântico em relação ao textual. A diferença entre os scores não mede ganho de qualidade.')
