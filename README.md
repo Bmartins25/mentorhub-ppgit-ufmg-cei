@@ -38,3 +38,10 @@ A aba Comparar motores mantém a tabela, substitui o gráfico empilhado por barr
 - Gráfico de barras agrupadas preservado.
 - Removidos os perfis demonstrativos Estudante de IA e Estudante de BI; incluído um único perfil para Transformação Digital e Inteligência Artificial.
 - As cinco áreas de concentração permanecem inalteradas.
+
+
+## v6 — Interpretação da comparação
+- Tabela comparativa com fontes e espaçamento ampliados.
+- Mudança de posição: subida em verde (↑ +N), queda em vermelho (↓ −N).
+- Conclusão automática, específica para o perfil selecionado, com líder de cada motor, maior subida e maior queda.
+- Scores são heurísticos e não constituem probabilidades ou validação de qualidade.
