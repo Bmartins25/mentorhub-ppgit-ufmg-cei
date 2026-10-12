@@ -31,3 +31,10 @@ A aba **Comparar motores** executa Textual Leve e IA Semântica sobre o mesmo pe
 
 ## v4 — interface clara e gráfico de barras
 A aba Comparar motores mantém a tabela, substitui o gráfico empilhado por barras agrupadas por mentor, com fundo branco e legenda de motores. O CSV registra a versão `v4-comparativo-barras`.
+
+
+## V5 — interface clara e perfis corrigidos
+- Tabela de comparação HTML com fundo branco e cabeçalho azul-claro, independente do tema escuro do Streamlit.
+- Gráfico de barras agrupadas preservado.
+- Removidos os perfis demonstrativos Estudante de IA e Estudante de BI; incluído um único perfil para Transformação Digital e Inteligência Artificial.
+- As cinco áreas de concentração permanecem inalteradas.

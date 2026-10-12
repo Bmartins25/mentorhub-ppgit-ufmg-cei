@@ -1,5 +1,6 @@
 import csv
 import io
+import html
 import pandas as pd
 import altair as alt
 from urllib.parse import urlparse
@@ -131,6 +132,19 @@ body [data-baseweb="popover"] [role="option"] {
 /* Indicador de carregamento claro, acessível e alinhado à marca */
 [data-testid="stSpinner"], [data-testid="stStatusWidget"] {background:#eaf3ff!important;color:#17365d!important;border:1px solid #b8d6fa!important;border-radius:12px!important;padding:10px 14px!important;}
 [data-testid="stSpinner"] *,[data-testid="stStatusWidget"] * {color:#17365d!important;}
+
+/* V5: tabela comparativa independente do tema do navegador e do Streamlit */
+.mentor-table-scroll{overflow-x:auto;width:100%;background:#fff;border:1px solid #d9e5f2;border-radius:12px;box-shadow:0 2px 12px rgba(17,59,107,.06)}
+.mentor-table{border-collapse:collapse;width:100%;min-width:1050px;background:#fff;color:#193758;font-size:.85rem}
+.mentor-table thead th{background:#e8f2ff!important;color:#123c70!important;font-weight:750;text-align:left;padding:13px 12px;border-bottom:2px solid #b7d3f2;white-space:nowrap}
+.mentor-table tbody td{background:#fff!important;color:#193758!important;padding:12px;border-bottom:1px solid #e6edf6;vertical-align:middle}
+.mentor-table tbody tr:nth-child(even) td{background:#f5f9ff!important}
+.mentor-table tbody tr:hover td{background:#eaf3ff!important}
+.mentor-table td:first-child{font-weight:700;white-space:nowrap}
+.mentor-table td:nth-child(n+3){font-variant-numeric:tabular-nums}
+.mentor-table .rank-up{color:#167347;font-weight:800}
+.mentor-table .rank-down{color:#c33e47;font-weight:800}
+@media(max-width:700px){.mentor-table{font-size:.8rem}.mentor-table td,.mentor-table th{padding:9px!important}}
 </style>''',unsafe_allow_html=True)
 
 if 'custom_mentors' not in st.session_state: st.session_state.custom_mentors=[]
@@ -375,14 +389,19 @@ with compare_tab:
         rows=comparison['rows']
         if rows:
             st.markdown('#### Ranking comparativo dos mentores')
-            st.dataframe(
-                pd.DataFrame(rows),hide_index=True,use_container_width=True,
-                column_config={
-                    'Score textual':st.column_config.NumberColumn(format='%.1f'),
-                    'Score semântico':st.column_config.NumberColumn(format='%.1f'),
-                    'Similaridade semântica (%)':st.column_config.ProgressColumn(min_value=0,max_value=100,format='%.1f%%'),
-                },
-            )
+            # Tabela HTML própria: evita o tema escuro do grid nativo do Streamlit.
+            visible_cols=['Mentor','Área do mentor','Posição textual','Score textual','Posição semântica','Score semântico','Mudança de posição','Similaridade semântica (%)']
+            def table_cell(value, column):
+                if column in ('Score textual','Score semântico','Similaridade semântica (%)'):
+                    return f'{float(value):.1f}' + ('%' if column.startswith('Similaridade') else '')
+                if column=='Mudança de posição':
+                    value=int(value)
+                    if value>0:return f'<span class="rank-up">↑ +{value}</span>'
+                    if value<0:return f'<span class="rank-down">↓ {value}</span>'
+                return html.escape(str(value))
+            head=''.join(f'<th>{html.escape(c)}</th>' for c in visible_cols)
+            body=''.join('<tr>'+''.join(f'<td>{table_cell(r[c],c)}</td>' for c in visible_cols)+'</tr>' for r in rows)
+            st.markdown(f'<div class="mentor-table-scroll"><table class="mentor-table"><thead><tr>{head}</tr></thead><tbody>{body}</tbody></table></div>',unsafe_allow_html=True)
             st.caption('Mudança de posição positiva: o mentor subiu no ranking semântico. As pontuações usam pesos diferentes; a diferença entre scores não mede ganho de qualidade.')
             st.markdown('#### Comparação de scores por mentor')
             st.caption('Barras agrupadas: cada mentor tem uma barra por algoritmo. Os valores são scores heurísticos, não probabilidades.')
@@ -404,7 +423,7 @@ with compare_tab:
             out=io.StringIO(); writer=csv.writer(out)
             writer.writerow(['perfil_mentorado','area_mentorado','objetivo_mentoria','competencias_mentorado','modelo_embeddings','versao_algoritmo']+list(rows[0].keys()))
             for r in rows:
-                writer.writerow([profile['nome'],profile['area'],profile['objetivo'],'; '.join(profile['competencias']),'paraphrase-multilingual-MiniLM-L12-v2','v4-comparativo-barras']+list(r.values()))
+                writer.writerow([profile['nome'],profile['area'],profile['objetivo'],'; '.join(profile['competencias']),'paraphrase-multilingual-MiniLM-L12-v2','v5-tabela-clara-barras']+list(r.values()))
             st.download_button('⬇️ Exportar comparação (CSV)',out.getvalue().encode('utf-8-sig'),'mentorhub_comparacao_motores.csv','text/csv')
             st.info('Validação de qualidade requer avaliações humanas de relevância. Diferenças de ranking, isoladamente, não comprovam superioridade do motor semântico.')
         else: st.warning('Nenhum mentor atende ao filtro de disponibilidade.')

@@ -53,8 +53,7 @@ MENTORES = [
  {'nome':'Luísa Carvalho','area':AREAS_PPGIT[4],'competencias':['Sustentabilidade','Economia circular','ESG','Gestão ambiental'],'bio':'Pesquisadora de sustentabilidade, economia circular e inovação para gestão ambiental.','disponivel':True,'lattes':''},
 ]
 MENTORADOS = [
- {'nome':'Estudante de IA','area':AREAS_PPGIT[3],'competencias':['Python','Machine Learning','NLP'],'objetivo':'Quero aprender inteligência artificial, processamento de linguagem natural e desenvolver um projeto de machine learning.'},
- {'nome':'Estudante de BI','area':AREAS_PPGIT[3],'competencias':['SQL','Power BI'],'objetivo':'Busco orientação para atuar com análise de dados, dashboards e business intelligence.'},
+ {'nome':'Estudante de Transformação Digital e Inteligência Artificial','area':AREAS_PPGIT[3],'competencias':['Python','Inteligência Artificial','Análise de dados'],'objetivo':'Busco orientação em transformação digital, aplicações de inteligência artificial e análise de dados em projetos de pesquisa.'},
  {'nome':'Estudante de Inovação','area':AREAS_PPGIT[1],'competencias':['Scrum','Empreendedorismo','Gestão de projetos'],'objetivo':'Desejo desenvolver um negócio inovador e aprender gestão de projetos e empreendedorismo.'},
  {'nome':'Estudante de Biotecnologia','area':AREAS_PPGIT[0],'competencias':['Biotecnologia','Biofármacos'],'objetivo':'Busco orientação em pesquisa e desenvolvimento de produtos biofarmacêuticos.'},
  {'nome':'Estudante de Nanotecnologia','area':AREAS_PPGIT[2],'competencias':['Nanotecnologia','Novos materiais'],'objetivo':'Quero desenvolver pesquisa aplicada em nanotecnologia e caracterização de novos materiais.'},

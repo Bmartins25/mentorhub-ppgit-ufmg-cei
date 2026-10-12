@@ -2,7 +2,7 @@ from pathlib import Path
 import ast
 from matching import MENTORES, MENTORADOS, AREAS_PPGIT, score
 assert len(AREAS_PPGIT)==5
-assert len(MENTORES)==8 and len(MENTORADOS)==6
+assert len(MENTORES)==8 and len(MENTORADOS)==5
 for p in MENTORADOS:
     for m in MENTORES:
         r=score(p,m)
@@ -14,4 +14,7 @@ ast.parse(source)
 assert 'from matching import MENTORES, MENTORADOS, AREAS_PPGIT, score' in source
 assert 'Equipe MentorHub' in source
 assert 'valid_lattes' in source
-print('OK: importações, 5 áreas, 8 mentores, 6 mentorados, scores, Lattes, rodapé e sintaxe')
+print('OK: importações, 5 áreas, 8 mentores, 5 mentorados, scores, Lattes, rodapé e sintaxe')
+
+assert all(p['nome'] not in ('Estudante de IA','Estudante de BI') for p in MENTORADOS)
+assert 'mentor-table-scroll' in source
