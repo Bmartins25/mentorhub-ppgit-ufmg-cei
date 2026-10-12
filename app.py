@@ -1,5 +1,7 @@
 import csv
 import io
+import base64
+from pathlib import Path
 import html
 import pandas as pd
 import altair as alt
@@ -32,6 +34,19 @@ h1,h2,h3,h4{color:#123c70!important}p,label,[data-testid="stMarkdownContainer"]{
 .eyebrow{color:#dceeff!important;font-size:.78rem;font-weight:800;letter-spacing:.12em}
 .small{color:#61748e;font-size:.9rem}.section-label{font-size:.82rem;font-weight:750;color:#1463ba;letter-spacing:.07em;text-transform:uppercase}
 
+/* V14: marca oficial também no cabeçalho principal e no celular */
+.hero-brand-row{display:flex;align-items:center;gap:24px;margin-top:14px}
+.hero-brand-logo{background:#fff;border-radius:12px;padding:12px;flex:0 0 245px;box-sizing:border-box}
+.hero-brand-logo img{display:block;width:100%;height:auto;object-fit:contain}
+.hero-brand-content{min-width:0;flex:1}
+.hero-brand-content h1{font-size:2rem;line-height:1.2;margin:0 0 10px!important}
+@media(max-width:720px){
+ .hero{padding:20px 17px!important}
+ .hero-brand-row{flex-direction:column;align-items:stretch;gap:14px}
+ .hero-brand-logo{flex:auto;width:min(100%,280px);align-self:center}
+ .hero-brand-content h1{font-size:1.7rem!important}
+ .eyebrow{font-size:.68rem;letter-spacing:.07em}
+}
 /* V10: ocultar ações de plataforma (Fork e menu), mantendo o controle da sidebar */
 [data-testid="stToolbar"], [data-testid="stAppToolbar"],
 [data-testid="stMainMenu"], [data-testid="stDecoration"],
@@ -235,7 +250,16 @@ with st.sidebar:
     st.divider()
     st.caption('Protótipo acadêmico independente • PPGIT/UFMG/CEI')
 
-st.markdown('<div class="hero"><div class="eyebrow">PROTÓTIPO ACADÊMICO · PPGIT/UFMG/CEI</div><h1>🎓 MentorHub — Matching Inteligente</h1><p>Conectando objetivos, competências e experiências com recomendações explicáveis.</p></div>',unsafe_allow_html=True)
+# Imagem embutida no cabeçalho para funcionar mesmo com sidebar recolhida no celular.
+_logo_bytes = Path(__file__).with_name('mentorhub_logo.png').read_bytes()
+_logo_uri = 'data:image/png;base64,' + base64.b64encode(_logo_bytes).decode('ascii')
+st.markdown(f'''<div class="hero hero-brand">
+  <div class="eyebrow">PROTÓTIPO ACADÊMICO · PPGIT/UFMG/CEI</div>
+  <div class="hero-brand-row">
+    <div class="hero-brand-logo"><img src="{_logo_uri}" alt="Logo oficial MentorHub"></div>
+    <div class="hero-brand-content"><h1>Matching Inteligente</h1><p>Conectando objetivos, competências e experiências com recomendações explicáveis.</p></div>
+  </div>
+</div>''', unsafe_allow_html=True)
 all_mentors=MENTORES+st.session_state.custom_mentors
 all_mentees=MENTORADOS+st.session_state.custom_mentees
 c1,c2,c3,c4=st.columns(4)
