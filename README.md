@@ -17,3 +17,11 @@ Envie `app.py`, `matching.py`, `requirements.txt` e `.streamlit/config.toml` jun
 `python -m streamlit run app.py`
 
 O teste smoke valida a importação e o algoritmo textual, mas não substitui o teste do download do modelo e do deploy no Streamlit Cloud.
+
+
+## Versão revisada — motor semântico
+- Dois rankings com pesos e sinais diferentes: baseline lexical e embeddings multilíngues.
+- Três comparações semânticas: objetivo/biografia, competências e perfil completo.
+- Justificativas específicas por motor e carregamento com indicador claro.
+- O modelo de embeddings é baixado na primeira execução; requer acesso à internet no servidor.
+- Pesos são heurísticos e exigem validação com relevância anotada por avaliadores humanos.

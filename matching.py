@@ -9,18 +9,32 @@ def cosine(a,b):
     return dot/den if den else 0.
 def normset(items): return set(tokens(' '.join(items)))
 def score(mentorado,mentor,semantic=None):
-    wants=normset(mentorado['competencias']); offers=normset(mentor['competencias']); skill=len(wants & offers)/len(wants) if wants else 0
-    semantic_score=cosine(mentorado['objetivo']+' '+' '.join(mentorado['competencias']),mentor['bio']+' '+' '.join(mentor['competencias'])) if semantic is None else semantic
-    area=1.0 if mentorado['area']==mentor['area'] else 0.0
-    available=1.0 if mentor['disponivel'] else 0.0
-    total=round(100*(.40*skill+.35*semantic_score+.15*area+.10*available),1)
+    wants=normset(mentorado['competencias']); offers=normset(mentor['competencias'])
+    lexical_skill=len(wants & offers)/len(wants) if wants else 0
+    lexical_context=cosine(mentorado['objetivo']+' '+' '.join(mentorado['competencias']),mentor['bio']+' '+' '.join(mentor['competencias']))
+    area=float(mentorado['area']==mentor['area'])
+    available=float(bool(mentor['disponivel']))
+    if semantic is None:
+        similarity=lexical_context
+        skill=lexical_skill
+        weights=(.40,.35,.15,.10)
+        method='Textual leve'
+    else:
+        # semantic: contexto (objetivo/bio), competências (listas), perfil integral
+        context,semantic_skills,full=semantic
+        similarity=max(0.,min(1., .65*context+.35*full))
+        skill=max(0.,min(1., .80*semantic_skills+.20*lexical_skill))
+        weights=(.30,.50,.10,.10)
+        method='IA semântica'
+    total=round(100*sum(w*x for w,x in zip(weights,(skill,similarity,area,available))),1)
     common=sorted(wants & offers)
     reasons=[]
-    if common: reasons.append('Competências em comum: '+', '.join(common[:6]))
+    if common: reasons.append('Termos de competências coincidentes: '+', '.join(common[:6]))
     if area: reasons.append('Mesma área de interesse')
     if not mentor['disponivel']: reasons.append('Mentor indisponível no momento')
-    reasons.append('Afinidade textual estimada: {:.0f}%'.format(semantic_score*100))
-    return {'total':total,'competencias':round(skill*100,1),'semantica':round(semantic_score*100,1),'area':round(area*100),'disponibilidade':round(available*100),'justificativa':'; '.join(reasons)}
+    reasons.append(('Afinidade semântica por embeddings' if semantic is not None else 'Afinidade lexical')+': {:.0f}%'.format(similarity*100))
+    if semantic is not None: reasons.append('Competências comparadas também por significado: {:.0f}%'.format(skill*100))
+    return {'total':total,'competencias':round(skill*100,1),'semantica':round(similarity*100,1),'area':round(area*100),'disponibilidade':round(available*100),'justificativa':'; '.join(reasons),'metodo':method}
 AREAS_PPGIT = [
     'Biotecnologia e Inovação Biofarmacêutica',
     'Gestão da Inovação, Propriedade Intelectual e Empreendedorismo',

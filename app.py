@@ -125,6 +125,10 @@ body [data-baseweb="popover"] [role="listbox"],
 body [data-baseweb="popover"] [role="option"] {
   background-color:#ffffff!important;color:#17365d!important;
 }
+
+/* Indicador de carregamento claro, acessível e alinhado à marca */
+[data-testid="stSpinner"], [data-testid="stStatusWidget"] {background:#eaf3ff!important;color:#17365d!important;border:1px solid #b8d6fa!important;border-radius:12px!important;padding:10px 14px!important;}
+[data-testid="stSpinner"] *,[data-testid="stStatusWidget"] * {color:#17365d!important;}
 </style>''',unsafe_allow_html=True)
 
 if 'custom_mentors' not in st.session_state: st.session_state.custom_mentors=[]
@@ -160,7 +164,7 @@ c3.metric('Mentores disponíveis',sum(m['disponivel'] for m in all_mentors))
 c4.metric('Áreas de concentração',len(AREAS_PPGIT))
 st.caption('Motor selecionado: ' + ('IA semântica' if mode.startswith('IA') else 'Textual leve'))
 
-@st.cache_resource(show_spinner='Carregando o modelo de IA semântica pela primeira vez...')
+@st.cache_resource(show_spinner=False)
 def load_semantic_model():
     from sentence_transformers import SentenceTransformer
     return SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2', device='cpu')
@@ -174,19 +178,22 @@ def get_semantic():
     if mode=='Textual leve':
         return None
     try:
-        model=load_semantic_model()
+        with st.spinner('Preparando o modelo de IA semântica...'):
+            model=load_semantic_model()
     except Exception as exc:
         st.error('Não foi possível iniciar a IA semântica. Confira a instalação de sentence-transformers e a versão do Python nos logs do Streamlit.')
         st.caption(f'Detalhe técnico: {type(exc).__name__}: {exc}')
         st.stop()
-    def semantic(a,b):
-        import math
-        left=a['objetivo']+' '+' '.join(a['competencias'])
-        right=b['bio']+' '+' '.join(b['competencias'])
-        v1=semantic_embedding(left)
-        v2=semantic_embedding(right)
-        # Os vetores já estão normalizados; produto escalar = similaridade cosseno.
+    def sim(left,right):
+        v1=semantic_embedding(left.strip() or 'sem informação')
+        v2=semantic_embedding(right.strip() or 'sem informação')
         return max(0.0,min(1.0,sum(x*y for x,y in zip(v1,v2))))
+    def semantic(a,b):
+        objective=a['objetivo']
+        bio=b['bio']
+        skills_a='; '.join(a['competencias'])
+        skills_b='; '.join(b['competencias'])
+        return (sim(objective,bio),sim(skills_a,skills_b),sim(objective+'; '+skills_a,bio+'; '+skills_b))
     return semantic
 
 def rank(profile,semantic=None):
@@ -329,7 +336,7 @@ with lab_tab:
 
 with method_tab:
     st.subheader('Como funciona o motor de matching?')
-    st.markdown('**Pontuação = 0,40 × competências + 0,35 × similaridade + 0,15 × área + 0,10 × disponibilidade.**')
+    st.markdown('**Textual leve:** 40% competências lexicais + 35% similaridade lexical + 15% área + 10% disponibilidade.\n\n**IA semântica:** 30% competências (embeddings e termos) + 50% contexto semântico + 10% área + 10% disponibilidade.')
     st.markdown('### Entenda as duas formas de busca')
     col_texto, col_ia = st.columns(2)
     with col_texto:
@@ -341,7 +348,7 @@ with method_tab:
         st.write('Transforma descrições em vetores numéricos e compara sua proximidade semântica. Pode relacionar expressões diferentes com significados semelhantes.')
         st.caption('Exemplo: “prever riscos clínicos” e “análise preditiva”.')
     st.markdown('**O que muda no ranking?**')
-    st.write('Somente a parcela de similaridade (35%) muda de método: lexical no modo textual e por embeddings no modo de IA. Competências (40%), área (15%) e disponibilidade (10%) continuam iguais.')
+    st.write('O modo textual utiliza sobreposição de termos e similaridade lexical. A IA semântica utiliza três comparações vetoriais independentes (objetivo × biografia, competências × competências e perfis completos), com pesos próprios. Scores de motores diferentes não são probabilidades nem diretamente calibrados.')
     st.info('Exemplo ilustrativo: um estudante que deseja prever riscos clínicos pode ser associado a um mentor de aprendizado de máquina pela busca semântica, mesmo que os textos não usem as mesmas palavras. Isso não garante uma posição específica no ranking.')
     st.write('O modo semântico exige que o modelo multilíngue seja carregado no servidor. Se estiver indisponível, utilize o modo textual.')
     st.write('Os candidatos são ordenados pela pontuação calculada, e os componentes do score são exibidos para transparência.')
