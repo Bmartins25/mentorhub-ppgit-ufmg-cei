@@ -1,4 +1,4 @@
-# MentorHub — PPGIT/UFMG/CEI — v7
+# MentorHub — PPGIT/UFMG/CEI — v8
 
 Protótipo demonstrativo independente de matching acadêmico. Os perfis são fictícios e não há integração com sistemas institucionais.
 
@@ -18,3 +18,6 @@ O Streamlit deve apontar para `app.py` na branch `main`. Se houver opção de Py
 Execute `python test_smoke.py` para verificar importações, dados e pontuações sem instalar Streamlit. Para executar o aplicativo localmente: `pip install -r requirements.txt` e `streamlit run app.py`.
 
 O modo de IA semântica é opcional e exige `sentence-transformers` instalado separadamente. O modo textual funciona apenas com Streamlit.
+
+## Tema claro v8
+Correções de contraste para seletores BaseWeb, menus em portal, expansores e botões de exportação.

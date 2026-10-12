@@ -49,6 +49,68 @@ h1,h2,h3,h4{color:#123c70!important}p,label,[data-testid="stMarkdownContainer"]{
 [data-testid="stExpander"] summary, [data-testid="stExpander"] p {color:#17365d!important;}
 .team-footer {padding:15px 10px 8px;text-align:center;color:#58708d;font-size:.9rem;}
 .team-footer strong{color:#155aaf;}
+
+/* V8: corrigir componentes BaseWeb com estilos nativos escuros */
+html, body, [data-testid="stApp"], .stApp {color-scheme:light!important;}
+[data-testid="stHeader"], header[data-testid="stHeader"],
+[data-testid="stToolbar"], [data-testid="stDecoration"],
+[data-testid="stAppToolbar"], [data-testid="stStatusWidget"] {
+  background-color:#f6f9fd!important;color:#17365d!important;
+}
+[data-testid="stHeader"] * {color:#17365d!important;}
+/* Campo select: o div externo deve ser branco, não só os descendentes. */
+.stApp [data-baseweb="select"],
+.stApp [data-baseweb="select"] > div,
+.stApp [data-baseweb="select"] > div > div,
+.stApp [data-baseweb="select"] [role="combobox"],
+.stApp [data-baseweb="select"] [aria-haspopup="listbox"],
+.stApp [data-baseweb="input"],
+.stApp [data-baseweb="input"] > div,
+.stApp [data-baseweb="textarea"],
+.stApp [data-baseweb="textarea"] > div {
+  background-color:#ffffff!important;color:#17365d!important;
+  border-color:#c7d9ed!important;
+}
+.stApp [data-baseweb="select"] *,
+.stApp [data-baseweb="input"] input,
+.stApp [data-baseweb="textarea"] textarea {
+  color:#17365d!important;
+  -webkit-text-fill-color:#17365d!important;
+}
+.stApp [data-baseweb="select"] svg {fill:#31618f!important;color:#31618f!important;}
+/* Dropdown é renderizado em portal fora do corpo principal do Streamlit. */
+body [data-baseweb="popover"], body [data-baseweb="popover"] > div,
+body [data-baseweb="menu"], body [data-baseweb="menu"] > div,
+body [role="listbox"], body [role="listbox"] > div,
+body [role="option"], body [role="option"] > div,
+body [data-baseweb="menu"] li {
+  background:#ffffff!important;color:#17365d!important;
+}
+body [role="option"] *,body [role="listbox"] *,body [data-baseweb="menu"] * {
+  color:#17365d!important;-webkit-text-fill-color:#17365d!important;
+}
+body [role="option"]:hover,body [role="option"][aria-selected="true"],
+body [data-baseweb="menu"] li:hover {background:#e9f3ff!important;}
+/* Expansor das áreas: fundo e textos legíveis mesmo aberto. */
+[data-testid="stSidebar"] [data-testid="stExpander"],
+[data-testid="stSidebar"] [data-testid="stExpander"] details,
+[data-testid="stSidebar"] [data-testid="stExpander"] summary,
+[data-testid="stSidebar"] [data-testid="stExpander"] [data-testid="stExpanderDetails"] {
+  background:#ffffff!important;color:#17365d!important;
+}
+[data-testid="stSidebar"] [data-testid="stExpander"] summary *,
+[data-testid="stSidebar"] [data-testid="stExpander"] [data-testid="stExpanderDetails"] * {
+  color:#17365d!important;-webkit-text-fill-color:#17365d!important;
+}
+/* Todos os botões de download e secundários seguem a paleta clara. */
+[data-testid="stDownloadButton"] button,
+[data-testid="stBaseButton-secondary"],
+[data-testid="stFormSubmitButton"] button:not([kind="primary"]) {
+  background:#eaf3ff!important;color:#1155a0!important;border:1px solid #b8d6fa!important;
+}
+[data-testid="stDownloadButton"] button *,[data-testid="stBaseButton-secondary"] * {
+  color:#1155a0!important;-webkit-text-fill-color:#1155a0!important;
+}
 </style>''',unsafe_allow_html=True)
 
 if 'custom_mentors' not in st.session_state: st.session_state.custom_mentors=[]
