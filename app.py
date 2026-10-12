@@ -16,7 +16,7 @@ def valid_lattes(url):
     parsed = urlparse(url.strip())
     return parsed.scheme == 'https' and parsed.hostname in {'lattes.cnpq.br', 'buscatextual.cnpq.br'} and bool(parsed.path.strip('/'))
 
-st.set_page_config(page_title='MentorHub | PPGIT/UFMG/CEI', page_icon='🎓', layout='wide', initial_sidebar_state='expanded')
+st.set_page_config(page_title='MentorHub | PPGIT/UFMG/CEI', page_icon='🎓', layout='wide', initial_sidebar_state='collapsed')
 # Streamlit theme is also enforced through .streamlit/config.toml
 st.markdown('''<style>
 .stApp,[data-testid="stAppViewContainer"],[data-testid="stMain"]{background:#f6f9fd;color:#20314a}
@@ -233,15 +233,18 @@ body [data-baseweb="popover"] [role="option"] {
 .stApp [data-testid="stSelectbox"] [data-baseweb="select"] svg,
 .stApp [data-testid="stSelectbox"] [data-baseweb="select"] svg path {fill:#1265d6!important;color:#1265d6!important;}
 .stApp [data-testid="stCheckbox"] input {accent-color:#1265d6!important;}
-/* V15: interruptores visíveis e navegação acessível em telas pequenas */
-.stApp [data-testid="stToggle"] label {display:flex!important;align-items:center!important;gap:12px!important;color:#17365d!important;opacity:1!important;}
-.stApp [data-testid="stToggle"] [role="switch"] {visibility:visible!important;opacity:1!important;flex-shrink:0!important;cursor:pointer!important;}
-.stApp [data-testid="stToggle"] [role="switch"][aria-checked="true"] {background-color:#1265d6!important;}
-.stApp [data-testid="stToggle"] [role="switch"][aria-checked="false"] {background-color:#b4c5d9!important;}
+/* V16: sidebar removida e checkbox original sempre visível */
+[data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"],
+[data-testid="collapsedControl"], [data-testid="stSidebarNav"] {display:none!important;}
+[data-testid="stAppViewContainer"] [data-testid="stMain"] {width:100%!important;max-width:100%!important;margin-left:0!important;}
+.stApp [data-testid="stCheckbox"] label {display:flex!important;align-items:center!important;gap:8px!important;opacity:1!important;cursor:pointer!important;}
+.stApp [data-testid="stCheckbox"] [data-baseweb="checkbox"] {display:flex!important;visibility:visible!important;opacity:1!important;flex-shrink:0!important;}
+.stApp [data-testid="stCheckbox"] [data-baseweb="checkbox"] > div {visibility:visible!important;opacity:1!important;border:2px solid #1265d6!important;background:#fff!important;border-radius:4px!important;}
+.stApp [data-testid="stCheckbox"] input:checked + div {background:#1265d6!important;}
 .stApp [data-testid="stTabs"] [data-baseweb="tab-list"] {overflow-x:auto!important;scrollbar-width:thin;flex-wrap:nowrap!important;}
 .stApp [data-testid="stTabs"] [data-baseweb="tab"] {flex-shrink:0!important;white-space:nowrap!important;}
 @media(max-width:720px){
- .stApp [data-testid="stToggle"] {margin:10px 0 16px!important;}
+ .stApp [data-testid="stCheckbox"] {margin:10px 0 16px!important;}
  .stApp [data-testid="stRadio"] [role="radiogroup"] {flex-wrap:wrap!important;gap:12px!important;}
  .stApp [data-testid="stTabs"] [data-baseweb="tab-list"] {max-width:calc(100vw - 40px)!important;}
 }
@@ -250,17 +253,6 @@ body [data-baseweb="popover"] [role="option"] {
 if 'custom_mentors' not in st.session_state: st.session_state.custom_mentors=[]
 if 'custom_mentees' not in st.session_state: st.session_state.custom_mentees=[]
 if 'form_reset_counter' not in st.session_state: st.session_state.form_reset_counter=0
-
-with st.sidebar:
-    st.image('mentorhub_logo.png', use_container_width=True)
-    st.caption('PPGIT / UFMG / CEI')
-    with st.expander('Áreas de concentração do PPGIT'):
-        for n, area in enumerate(AREAS_PPGIT, 1):
-            st.caption(f'{n}. {area}')
-    st.divider()
-    st.caption('Configuração do matching disponível na área principal, inclusive no celular.')
-    st.divider()
-    st.caption('Protótipo acadêmico independente • PPGIT/UFMG/CEI')
 
 # Imagem embutida no cabeçalho para funcionar mesmo com sidebar recolhida no celular.
 _logo_bytes = Path(__file__).with_name('mentorhub_logo.png').read_bytes()
@@ -284,7 +276,7 @@ st.markdown('### Configuração do matching')
 mode = st.radio('Motor de recomendação', ['Textual leve', 'IA semântica (embeddings)'],
                     horizontal=True, key='matching_mode_main',
                     help='A seleção vale para busca e laboratório. A aba de comparação executa ambos os motores.')
-available_only = st.toggle('Somente mentores disponíveis', value=True, key='matching_available_main', help='Ative para mostrar somente mentores com disponibilidade cadastrada.')
+available_only = st.checkbox('Somente mentores disponíveis', value=True, key='matching_available_main', help='Marque para mostrar somente mentores com disponibilidade cadastrada.')
 with st.expander('Entenda a diferença entre os motores e seus pesos'):
     st.markdown('**Textual leve:** compara palavras e expressões presentes nos perfis. Pesos: competências 40%, contexto 35%, área 15% e disponibilidade 10%.')
     st.markdown('**IA semântica:** utiliza embeddings para comparar significado e contexto. Pesos: competências 30%, contexto 50%, área 10% e disponibilidade 10%.')
