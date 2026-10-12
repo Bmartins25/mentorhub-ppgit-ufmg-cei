@@ -111,6 +111,13 @@ body [data-baseweb="menu"] li:hover {background:#e9f3ff!important;}
 [data-testid="stDownloadButton"] button *,[data-testid="stBaseButton-secondary"] * {
   color:#1155a0!important;-webkit-text-fill-color:#1155a0!important;
 }
+
+/* V9: perfis em opções claras, eliminando o dropdown escuro. */
+[data-testid="stRadio"] [role="radiogroup"] {display:flex!important;flex-wrap:wrap!important;gap:9px!important;align-items:stretch!important;}
+[data-testid="stRadio"] label[data-baseweb="radio"] {background:#ffffff!important;border:1px solid #c6d9ef!important;border-radius:10px!important;padding:9px 14px!important;margin:0!important;min-height:42px!important;}
+[data-testid="stRadio"] label[data-baseweb="radio"]:hover {background:#eaf3ff!important;border-color:#78b0f0!important;}
+[data-testid="stRadio"] label[data-baseweb="radio"] span,[data-testid="stRadio"] label[data-baseweb="radio"] p {color:#17365d!important;-webkit-text-fill-color:#17365d!important;}
+[data-testid="stRadio"] [role="radiogroup"] label:has(input:checked) {background:#e3f0ff!important;border-color:#1265d6!important;box-shadow:0 0 0 1px #1265d6 inset!important;}
 </style>''',unsafe_allow_html=True)
 
 if 'custom_mentors' not in st.session_state: st.session_state.custom_mentors=[]
@@ -175,7 +182,8 @@ find_tab,profiles_tab,lab_tab,method_tab=st.tabs(['🔎 Encontrar mentores','�
 with find_tab:
     st.subheader('Encontre seu mentor ideal')
     names=[m['nome'] for m in all_mentees]
-    selected=st.selectbox('Perfil do mentorado',names)
+    # Seleção por cartões nativos, sem dropdown BaseWeb (que assumia fundo escuro no Cloud).
+    selected=st.radio('Perfil do mentorado', names, horizontal=True, key='perfil_mentorado', label_visibility='visible')
     profile=next(m for m in all_mentees if m['nome']==selected)
     with st.container(border=True):
         left,right=st.columns([2,1])
