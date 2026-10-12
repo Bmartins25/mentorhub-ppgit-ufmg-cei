@@ -25,3 +25,6 @@ O teste smoke valida a importação e o algoritmo textual, mas não substitui o 
 - Justificativas específicas por motor e carregamento com indicador claro.
 - O modelo de embeddings é baixado na primeira execução; requer acesso à internet no servidor.
 - Pesos são heurísticos e exigem validação com relevância anotada por avaliadores humanos.
+
+## Versão 3 — comparação controlada
+A aba **Comparar motores** executa Textual Leve e IA Semântica sobre o mesmo perfil e conjunto de mentores, apresenta diferenças de posição, componentes do score e justificativas, e exporta CSV com os parâmetros do experimento. O score é heurístico e não representa probabilidade de sucesso. A qualidade da recomendação exige avaliação humana de relevância.

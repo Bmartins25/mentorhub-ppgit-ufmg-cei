@@ -149,7 +149,7 @@ with st.sidebar:
         st.info('🧠 **Busca inteligente com IA**\n\nCompara o significado dos textos, mesmo com palavras diferentes. Exemplo: “prever riscos clínicos” pode estar relacionado a “análise preditiva”.')
     st.caption('Os dois modos também consideram competências, área e disponibilidade. O score é experimental.')
     available_only=st.checkbox('Somente mentores disponíveis',value=True)
-    st.info('Critérios experimentais: competências 40% · similaridade 35% · área 15% · disponibilidade 10%.')
+    st.info('Pesos — Textual: competências 40%, contexto 35%, área 15%, disponibilidade 10%. IA semântica: competências 30%, contexto 50%, área 10%, disponibilidade 10%.')
     st.caption('Dados fictícios e perfis inseridos nesta sessão. Pontuações não validadas cientificamente.')
     st.divider()
     st.caption('Protótipo acadêmico independente • PPGIT/UFMG/CEI')
@@ -210,7 +210,7 @@ def csv_bytes(rows):
     for m,s in rows:w.writerow([m['nome'],m['area'],m.get('lattes',''),s['total'],s['competencias'],s['semantica'],s['area'],s['disponibilidade'],s['justificativa']])
     return out.getvalue().encode('utf-8-sig')
 
-find_tab,profiles_tab,lab_tab,method_tab=st.tabs(['🔎 Encontrar mentores','👥 Cadastrar perfis','🧪 Laboratório de testes','📘 Metodologia'])
+find_tab,profiles_tab,lab_tab,compare_tab,method_tab=st.tabs(['🔎 Encontrar mentores','👥 Cadastrar perfis','🧪 Laboratório de testes','⚖️ Comparar motores','📘 Metodologia'])
 
 with find_tab:
     st.subheader('Encontre seu mentor ideal')
@@ -333,6 +333,57 @@ with lab_tab:
             st.caption('Os valores são scores heurísticos. Não representam acurácia nem taxa de sucesso.')
         else:st.warning('Sem candidatos disponíveis para os cenários.')
     else:st.info('Clique em Executar bateria de testes para iniciar.')
+
+
+with compare_tab:
+    st.subheader('Comparação controlada: Textual Leve × IA Semântica')
+    st.write('Os dois motores usam o mesmo mentorado e o mesmo conjunto de candidatos. Scores não são probabilidades e não devem ser interpretados como equivalentes.')
+    chosen=st.selectbox('Perfil para comparação',range(len(all_mentees)),format_func=lambda i: f"{all_mentees[i]['nome']} — {all_mentees[i]['area']}",key='compare_profile')
+    profile=all_mentees[chosen]
+    st.caption(f"Objetivo: {profile['objetivo']}")
+    st.caption('Competências: '+', '.join(profile['competencias']))
+    if st.button('⚖️ Executar comparação com os mesmos dados',type='primary',use_container_width=True):
+        semantic_fn=get_semantic() if mode.startswith('IA') else None
+        # A comparação sempre carrega o motor semântico, independentemente da escolha lateral.
+        if semantic_fn is None:
+            try:
+                with st.spinner('Preparando o modelo de IA semântica...'):
+                    load_semantic_model()
+                def sim(a,b):
+                    x=semantic_embedding(a.strip() or 'sem informação'); y=semantic_embedding(b.strip() or 'sem informação')
+                    return max(0.,min(1.,sum(v*w for v,w in zip(x,y))))
+                def semantic_fn(a,b):
+                    sa='; '.join(a['competencias']); sb='; '.join(b['competencias'])
+                    return (sim(a['objetivo'],b['bio']),sim(sa,sb),sim(a['objetivo']+'; '+sa,b['bio']+'; '+sb))
+            except Exception as exc:
+                st.error(f'Não foi possível carregar o modelo semântico: {type(exc).__name__}: {exc}')
+                st.stop()
+        mentors=[m for m in all_mentors if m['disponivel'] or not available_only]
+        textual=sorted([(m,score(profile,m)) for m in mentors],key=lambda t:t[1]['total'],reverse=True)
+        semantic=sorted([(m,score(profile,m,semantic_fn(profile,m))) for m in mentors],key=lambda t:t[1]['total'],reverse=True)
+        t_index={m['nome']:(i+1,s) for i,(m,s) in enumerate(textual)}
+        s_index={m['nome']:(i+1,s) for i,(m,s) in enumerate(semantic)}
+        rows=[]
+        for m,_ in textual:
+            rt,t=t_index[m['nome']]; rs,a=s_index[m['nome']]
+            rows.append({'Mentor':m['nome'],'Área do mentor':m['area'],'Posição textual':rt,'Score textual':t['total'],'Posição semântica':rs,'Score semântico':a['total'],'Mudança de posição':rt-rs,'Similaridade lexical (%)':t['semantica'],'Similaridade semântica (%)':a['semantica'],'Competências textual (%)':t['competencias'],'Competências semântica (%)':a['competencias'],'Área (%)':a['area'],'Disponibilidade (%)':a['disponibilidade'],'Justificativa textual':t['justificativa'],'Justificativa semântica':a['justificativa']})
+        st.session_state.comparison={'signature':(chosen,available_only,repr(all_mentors),repr(all_mentees)),'rows':rows,'profile':dict(profile)}
+    comparison=st.session_state.get('comparison')
+    if comparison and comparison['signature']==(chosen,available_only,repr(all_mentors),repr(all_mentees)):
+        rows=comparison['rows']
+        if rows:
+            st.dataframe(rows,hide_index=True,use_container_width=True)
+            st.caption('Mudança de posição positiva: o mentor subiu no ranking semântico. As pontuações usam pesos diferentes; a diferença entre scores não mede ganho de qualidade.')
+            st.bar_chart({r['Mentor']:{'Textual':r['Score textual'],'Semântica':r['Score semântico']} for r in rows},y_label='Score heurístico (0–100)')
+            out=io.StringIO(); writer=csv.writer(out)
+            writer.writerow(['perfil_mentorado','area_mentorado','objetivo_mentoria','competencias_mentorado','modelo_embeddings','versao_algoritmo']+list(rows[0].keys()))
+            for r in rows:
+                writer.writerow([profile['nome'],profile['area'],profile['objetivo'],'; '.join(profile['competencias']),'paraphrase-multilingual-MiniLM-L12-v2','v3-comparativo']+list(r.values()))
+            st.download_button('⬇️ Exportar comparação (CSV)',out.getvalue().encode('utf-8-sig'),'mentorhub_comparacao_motores.csv','text/csv')
+            st.info('Validação de qualidade requer avaliações humanas de relevância. Diferenças de ranking, isoladamente, não comprovam superioridade do motor semântico.')
+        else: st.warning('Nenhum mentor atende ao filtro de disponibilidade.')
+    else:
+        st.info('Selecione o perfil e execute a comparação. A primeira execução pode demorar enquanto o modelo é carregado.')
 
 with method_tab:
     st.subheader('Como funciona o motor de matching?')
