@@ -79,3 +79,6 @@ CSS específico para rádio, checkbox e seletor, inclusive a área da seta. Sem 
 
 ## v17
 Corrige checkbox que desaparecia ao ser selecionado: removidas sobrescritas CSS do indicador nativo; sidebar permanece oculta.
+
+## v18
+Espaçamento superior e inferior do subtítulo PROTÓTIPO ACADÊMICO no cabeçalho, especialmente em telas móveis.

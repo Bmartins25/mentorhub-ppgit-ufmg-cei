@@ -31,7 +31,7 @@ h1,h2,h3,h4{color:#123c70!important}p,[data-testid="stMarkdownContainer"]{color:
 [data-baseweb="select"]>div,[data-baseweb="input"]>div,textarea{background:white!important;color:#1d3454!important}
 .hero{background:linear-gradient(110deg,#123c70,#1566d6);padding:27px 31px;border-radius:18px;margin-bottom:15px}
 .hero h1{color:white!important;margin:3px 0;font-size:2.05rem}.hero p{color:#edf5ff!important;margin:6px 0 0}
-.eyebrow{color:#dceeff!important;font-size:.78rem;font-weight:800;letter-spacing:.12em}
+.eyebrow{color:#dceeff!important;font-size:.78rem;font-weight:800;letter-spacing:.12em;line-height:1.5;display:block;margin:0 0 14px;padding-top:4px}
 .small{color:#61748e;font-size:.9rem}.section-label{font-size:.82rem;font-weight:750;color:#1463ba;letter-spacing:.07em;text-transform:uppercase}
 
 /* V14: marca oficial também no cabeçalho principal e no celular */
@@ -41,11 +41,11 @@ h1,h2,h3,h4{color:#123c70!important}p,[data-testid="stMarkdownContainer"]{color:
 .hero-brand-content{min-width:0;flex:1}
 .hero-brand-content h1{font-size:2rem;line-height:1.2;margin:0 0 10px!important}
 @media(max-width:720px){
- .hero{padding:20px 17px!important}
+ .hero{padding:30px 17px 22px!important}
  .hero-brand-row{flex-direction:column;align-items:stretch;gap:14px}
  .hero-brand-logo{flex:auto;width:min(100%,280px);align-self:center}
  .hero-brand-content h1{font-size:1.7rem!important}
- .eyebrow{font-size:.68rem;letter-spacing:.07em}
+ .eyebrow{font-size:.68rem;letter-spacing:.07em;line-height:1.6;margin-bottom:18px;padding-top:5px}
 }
 /* V10: ocultar ações de plataforma (Fork e menu), mantendo o controle da sidebar */
 [data-testid="stToolbar"], [data-testid="stAppToolbar"],
