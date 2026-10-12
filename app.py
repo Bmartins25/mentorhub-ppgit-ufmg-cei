@@ -138,7 +138,7 @@ with st.sidebar:
             st.caption(f'{n}. {area}')
     st.divider()
     st.markdown('**Configuração do motor**')
-    mode=st.radio('Similaridade',['Textual leve','IA semântica (opcional)'],help='O modo semântico requer dependências adicionais e download do modelo.')
+    mode=st.radio('Similaridade',['Textual leve','IA semântica (embeddings)'],help='IA semântica usa embeddings multilíngues; o primeiro carregamento baixa o modelo.')
     available_only=st.checkbox('Somente mentores disponíveis',value=True)
     st.info('Critérios experimentais: competências 40% · similaridade 35% · área 15% · disponibilidade 10%.')
     st.caption('Dados fictícios e perfis inseridos nesta sessão. Pontuações não validadas cientificamente.')
@@ -155,20 +155,34 @@ c3.metric('Mentores disponíveis',sum(m['disponivel'] for m in all_mentors))
 c4.metric('Áreas de concentração',len(AREAS_PPGIT))
 st.caption('Motor selecionado: ' + ('IA semântica' if mode.startswith('IA') else 'Textual leve'))
 
+@st.cache_resource(show_spinner='Carregando o modelo de IA semântica pela primeira vez...')
+def load_semantic_model():
+    from sentence_transformers import SentenceTransformer
+    return SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2', device='cpu')
+
+@st.cache_data(show_spinner=False, max_entries=3000)
+def semantic_embedding(text):
+    model=load_semantic_model()
+    return model.encode(text, normalize_embeddings=True, convert_to_numpy=True).tolist()
+
 def get_semantic():
-    if mode=='Textual leve':return None
+    if mode=='Textual leve':
+        return None
     try:
-        from sentence_transformers import SentenceTransformer,util
-        @st.cache_resource(show_spinner='Carregando modelo semântico...')
-        def load():return SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
-        model=load()
-        def semantic(a,b):
-            emb=model.encode([a['objetivo']+' '+' '.join(a['competencias']),b['bio']+' '+' '.join(b['competencias'])],convert_to_tensor=True)
-            return max(0.,min(1.,float(util.cos_sim(emb[0],emb[1]).item())))
-        return semantic
+        model=load_semantic_model()
     except Exception as exc:
-        st.error('Motor semântico indisponível: {}. Use Textual leve ou instale as dependências opcionais.'.format(exc))
+        st.error('Não foi possível iniciar a IA semântica. Confira a instalação de sentence-transformers e a versão do Python nos logs do Streamlit.')
+        st.caption(f'Detalhe técnico: {type(exc).__name__}: {exc}')
         st.stop()
+    def semantic(a,b):
+        import math
+        left=a['objetivo']+' '+' '.join(a['competencias'])
+        right=b['bio']+' '+' '.join(b['competencias'])
+        v1=semantic_embedding(left)
+        v2=semantic_embedding(right)
+        # Os vetores já estão normalizados; produto escalar = similaridade cosseno.
+        return max(0.0,min(1.0,sum(x*y for x,y in zip(v1,v2))))
+    return semantic
 
 def rank(profile,semantic=None):
     rows=[]

@@ -1,23 +1,19 @@
-# MentorHub — PPGIT/UFMG/CEI — v8
+# MentorHub — PPGIT/UFMG/CEI — v12
 
-Protótipo demonstrativo independente de matching acadêmico. Os perfis são fictícios e não há integração com sistemas institucionais.
+Protótipo acadêmico independente com cinco áreas de concentração, seleção por área sem repetição, ranking explicável e dois motores de similaridade. Os perfis de exemplo são fictícios.
 
-## Melhorias
-- Cinco áreas de concentração do PPGIT; oito mentores e seis mentorados fictícios.
-- Campo opcional de Currículo Lattes para novos mentores e link no ranking quando preenchido.
-- Interface clara, inclusive menus suspensos e botão de exportação CSV.
-- Rodapé «Equipe MentorHub».
-- Ranking explicável e laboratório de testes.
+## IA semântica
 
-## Publicação no GitHub / Streamlit Cloud
-**Envie `app.py`, `matching.py`, `requirements.txt`, `.streamlit/config.toml` juntos.** Não renomeie `matching.py`: o import do `app.py` depende desse nome. Oculte/exclua `__pycache__` (já ignorado por `.gitignore`).
+A opção **IA semântica (embeddings)** utiliza `sentence-transformers` e o modelo `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`, baixado automaticamente na primeira execução. Embeddings de textos são armazenados em cache, evitando recomputação. O motor textual permanece disponível sem carregar o modelo.
 
-O Streamlit deve apontar para `app.py` na branch `main`. Se houver opção de Python no painel de deploy, prefira Python 3.12 ou 3.13.
+## Publicação
 
-### Teste antes de publicar
-Execute `python test_smoke.py` para verificar importações, dados e pontuações sem instalar Streamlit. Para executar o aplicativo localmente: `pip install -r requirements.txt` e `streamlit run app.py`.
+Envie `app.py`, `matching.py`, `requirements.txt` e `.streamlit/config.toml` juntos ao GitHub. No Streamlit Community Cloud, use **Python 3.11 ou 3.12** ao criar/recriar a aplicação para melhor compatibilidade com PyTorch e Transformers. A versão de Python não é controlada pelo `requirements.txt`; confira as configurações do aplicativo. A primeira execução semântica pode demorar e exigir memória adicional.
 
-O modo de IA semântica é opcional e exige `sentence-transformers` instalado separadamente. O modo textual funciona apenas com Streamlit.
+## Teste
 
-## Tema claro v8
-Correções de contraste para seletores BaseWeb, menus em portal, expansores e botões de exportação.
+`python -m pip install -r requirements.txt`
+`python test_smoke.py`
+`python -m streamlit run app.py`
+
+O teste smoke valida a importação e o algoritmo textual, mas não substitui o teste do download do modelo e do deploy no Streamlit Cloud.

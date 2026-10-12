@@ -1,1 +1,2 @@
 streamlit>=1.50,<2
+sentence-transformers>=5.1,<6
